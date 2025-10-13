@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ d[1] }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✅ Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="wrapper">
+    <!-- 🧭 Header -->
+    <div class="header">
+        <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Mobibenz Logo">
+        <h1>Fiche d'intervention</h1>
+    </div>
+
+    <!-- 🧾 Informations intervention -->
+    <div class="section">
+        <h2>Informations de l'intervention</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Numéro</strong>
+                {{ d[1] }}
+            </div>
+            <div class="info-item">
+                <strong>Date & Heure</strong>
+                {{ d[11] }}
+            </div>
+            <div class="info-item">
+                <strong>Technicien</strong>
+                —
+            </div>
+        </div>
+    </div>
+
+    <!-- 👤 Informations client -->
+    <div class="section">
+        <h2>Informations client</h2>
+        <div class="info-grid">
+            <div class="info-item"><strong>Entreprise</strong>{{ d[2] }}</div>
+            <div class="info-item"><strong>Contact</strong>{{ d[3] }}</div>
+            <div class="info-item"><strong>Téléphone</strong>{{ d[4] }}</div>
+            <div class="info-item"><strong>Email</strong>{{ d[5] }}</div>
+        </div>
+    </div>
+
+    <!-- 🛠️ Détails de l'intervention -->
+    <div class="section">
+        <h2>Détails de l'intervention</h2>
+        <div class="info-grid">
+            <div class="info-item"><strong>Titre</strong>{{ d[6] }}</div>
+            <div class="info-item"><strong>Type</strong>{{ d[8] }}</div>
+            <div class="info-item" style="grid-column: 1 / span 2;">
+                <strong>Détail</strong>
+                {{ d[9] }} {% if d[10] %} — {{ d[10] }}{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 📝 Signature -->
+    <div class="signature-container">
+        <div class="signature-box">
+            Signature client
+        </div>
+    </div>
+
+    <!-- 📌 Footer -->
+    <footer>
+      <div class="footer-2cols">
+        <div class="col">
+          📍 Patrimoine Algérois Villa G7 Panorama, H. Dey, Alger<br>
+          ✉️ info@mobibenz.com<br>
+          🌐 www.mobibenz.com
+        </div>
+        <div class="col">
+          ☎️ +213 23 779 598<br>
+          📠 +213 23 779 802<br>
+          📱 +213 555 574 654 / +213 555 295 356
+        </div>
+      </div>
+      <p>© {{ year }} Mobibenz Technologie — Tous droits réservés</p>
+    </footer>
+</div>
+
+<!-- 🖨️ Bouton impression -->
+<button class="print-btn" onclick="window.print()">🖨️ Imprimer / PDF</button>
+
+</body>
+</html>

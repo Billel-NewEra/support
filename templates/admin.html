@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Interventions</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+    .table td {
+      vertical-align: middle;
+    }
+    .description-cell {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge {
+      font-size: 0.85rem;
+    }
+    .actions form {
+      display: inline-block;
+      margin-right: 4px;
+    }
+    /* 🆕 Style spécial pour le badge Express */
+    .badge-express {
+      background: linear-gradient(135deg, #0d6efd, #0a2760);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📋 Liste des interventions</h2>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Déconnexion</a>
+  </div>
+
+  <!-- ⚡ Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Num_intervention</th>
+          <th>Entreprise</th>
+          <th>Contact</th>
+          <th>Téléphone</th>
+          <th>Email</th>
+          <th>Titre</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Express</th>
+          <th>Date</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in demandes %}
+        <tr>
+          <td>{{ d[0] }}</td>
+          <td><strong>{{ d[1] }}</strong></td>
+          <td>{{ d[2] }}</td>
+          <td>{{ d[3] }}</td>
+          <td>{{ d[4] }}</td>
+          <td>{{ d[5] }}</td>
+          <td>{{ d[6] }}</td>
+          <td class="description-cell" title="{{ d[7] }}">{{ d[7] }}</td>
+          <td>
+            <span class="badge bg-info">{{ d[8] }}</span>
+            {% if d[9] %}
+              <br><span class="badge bg-secondary">{{ d[9] }}</span>
+            {% endif %}
+            {% if d[10] %}
+              <div class="mt-1"><small><em>{{ d[10] }}</em></small></div>
+            {% endif %}
+          </td>
+
+          <!-- 🆕 Colonne Express -->
+          <td>
+            {% if d[11] == 1 %}
+              <span class="badge badge-express">Oui</span>
+            {% else %}
+              <span class="badge bg-light text-dark">Non</span>
+            {% endif %}
+          </td>
+
+          <td>{{ d[12] }}</td>
+          <td>
+            {% if d[13] == 'En attente' %}
+              <span class="badge bg-warning text-dark">{{ d[13] }}</span>
+            {% elif d[13] == 'En cours' %}
+              <span class="badge bg-primary">{{ d[13] }}</span>
+            {% else %}
+              <span class="badge bg-success">{{ d[13] }}</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            <!-- 🔄 Changer statut -->
+            <form action="{{ url_for('update_statut', id=d[0]) }}" method="POST">
+              <select name="new_statut" class="form-select form-select-sm mb-1">
+                <option value="En attente" {% if d[13]=='En attente' %}selected{% endif %}>En attente</option>
+                <option value="En cours" {% if d[13]=='En cours' %}selected{% endif %}>En cours</option>
+                <option value="Résolue" {% if d[13]=='Résolue' %}selected{% endif %}>Résolue</option>
+              </select>
+              <button class="btn btn-sm btn-success w-100">OK</button>
+            </form>
+
+            <!-- 🖨️ Imprimer -->
+            <form action="{{ url_for('print_intervention', id=d[0]) }}" method="GET">
+              <button class="btn btn-sm btn-primary w-100 mt-1">🖨️ Imprimer</button>
+            </form>
+
+            <!-- 🗑️ Supprimer -->
+            <form action="{{ url_for('delete_demande', id=d[0]) }}" method="POST" onsubmit="return confirm('Supprimer cette intervention ?')">
+              <button class="btn btn-sm btn-danger w-100 mt-1">🗑️ Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

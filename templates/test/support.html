@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demande de support - Mobibenz</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bleu-fonce: #0a2760;
+      --bleu-clair: #1473e6;
+      --bleu-milieu: #0d47a1;
+      --vert: #0c8b3e;
+      --blanc: #ffffff;
+    }
+
+    /* 🌊 Dégradé de fond */
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bleu-fonce), var(--bleu-milieu), var(--bleu-clair));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    /* 🧊 Formulaire flottant - effet glass */
+    .form-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 850px;
+      width: 100%;
+      color: #fff;
+      box-shadow: 0 0 30px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-box h2 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--vert);
+      margin-bottom: 15px;
+      margin-top: 20px;
+      text-transform: uppercase;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .form-control,
+    .form-select {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background: rgba(255, 255, 255, 0.25);
+      outline: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    .form-control::placeholder {
+      color: #eee;
+    }
+
+    .alert {
+      font-size: 0.9rem;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* 📨 Bouton Envoyer */
+    .btn-envoyer {
+      background: linear-gradient(135deg, var(--vert), #0ea645);
+      border: none;
+      font-size: 0.9rem;
+      padding: 10px 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(12, 139, 62, 0.4);
+      transition: all 0.2s ease-in-out;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn-envoyer:hover {
+      background: linear-gradient(135deg, #0ea645, var(--vert));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(12, 139, 62, 0.5);
+    }
+
+    .btn-envoyer i {
+      font-size: 1rem;
+    }
+
+    /* Logo */
+    .logo {
+      display: block;
+      margin: 0 auto 15px auto;
+      height: 80px;
+    }
+
+    @media (max-width: 991px) {
+      .col-lg-6, .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-box">
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" class="logo">
+    <h2>Demande de support</h2>
+
+    <form action="{{ url_for('submit') }}" method="POST">
+      <!-- 🧍 SECTION 1 : Informations client -->
+      <h4>Informations client</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Entreprise *</label>
+            <input type="text" name="entreprise" class="form-control" required placeholder="Nom de l'entreprise">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Nom du contact *</label>
+            <input type="text" name="contact_nom" class="form-control" required placeholder="Nom complet">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Téléphone *</label>
+            <input type="tel" name="telephone" class="form-control" required placeholder="Ex: +213 55...">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Adresse e-mail</label>
+            <input type="email" name="email" class="form-control" placeholder="Ex: contact@mobibenz.com">
+          </div>
+        </div>
+      </div>
+
+      <!-- 📝 SECTION 2 : Informations sur la demande -->
+      <h4>Informations sur la demande</h4>
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="mb-3">
+            <label class="form-label">Titre de la demande *</label>
+            <input type="text" name="titre" class="form-control" required placeholder="Sujet de la demande">
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label class="form-label">Type de support *</label>
+            <select name="type_support" id="type_support" class="form-select" required>
+              <option value="">-- Sélectionner --</option>
+              <option value="Sur site">Support sur site</option>
+              <option value="À distance">Support à distance</option>
+              <option value="Livraison">Livraison</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label class="form-label">Détail *</label>
+            <select name="detail_support" id="detail_support" class="form-select" required>
+              <option value="">-- Sélectionner --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-12 d-none" id="autre_detail_container">
+          <div class="mb-3">
+            <label class="form-label">Détail supplémentaire</label>
+            <input type="text" name="autre_detail" class="form-control" placeholder="Précisez...">
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="mb-3">
+            <label class="form-label">Description *</label>
+            <textarea name="description" class="form-control" rows="4" maxlength="5000" required placeholder="Décrivez le problème ou la demande..."></textarea>
+            <small class="text-light">Max 5000 caractères</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⚠️ Message & Validation -->
+      <div class="alert text-center">
+        ⚠️ Tout déplacement pour support est facturé <strong>3000 DA</strong>.
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" required>
+        <label class="form-check-label text-light">
+          J’ai lu et j’accepte la politique d’intervention.
+        </label>
+      </div>
+
+      <!-- ✈️ Bouton envoyer -->
+      <button type="submit" class="btn-envoyer">
+        <i class="fa-solid fa-paper-plane"></i>
+        Envoyer
+      </button>
+    </form>
+  </div>
+
+<script>
+const typeSelect = document.getElementById('type_support');
+const detailSelect = document.getElementById('detail_support');
+const autreContainer = document.getElementById('autre_detail_container');
+
+const options = {
+  "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
+  "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"],
+  "Livraison": ["Livraison standard", "Installation sur place", "Autre"]
+};
+
+typeSelect.addEventListener('change', () => {
+  detailSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
+  if (options[typeSelect.value]) {
+    options[typeSelect.value].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      detailSelect.appendChild(o);
+    });
+  }
+});
+
+detailSelect.addEventListener('change', () => {
+  if (detailSelect.value === "Autre") {
+    autreContainer.classList.remove('d-none');
+  } else {
+    autreContainer.classList.add('d-none');
+  }
+});
+</script>
+
+</body>
+</html>

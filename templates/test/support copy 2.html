@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demande de support - Mobibenz</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bleu-fonce: #0a2760;
+      --bleu-clair: #1473e6;
+      --bleu-milieu: #0d47a1;
+      --vert: #0c8b3e;
+    }
+
+    /* 🌊 Fond animé */
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bleu-fonce), var(--bleu-milieu), var(--bleu-clair));
+      background-size: 400% 400%;
+      animation: gradientAnim 15s ease infinite;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    @keyframes gradientAnim {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 🧭 Barre supérieure */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      padding: 15px 30px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .top-bar .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #fff;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .top-bar .logo-nav {
+      height: 85px; /* ✅ Logo plus grand */
+    }
+
+    .slogan {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 8px;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    /* 🧊 Formulaire */
+    .form-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 850px;
+      width: 100%;
+      color: #fff;
+      box-shadow: 0 0 30px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 150px; /* décalé pour le logo plus grand */
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: 0.3s;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-box h2 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgb(80, 121, 82);
+  margin-bottom: 8px;
+  margin-top: 20px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--vert);  /* 🌿 ligne verte discrète */
+  padding-bottom: 4px;
+}
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .form-control,
+    .form-select {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background: rgba(255, 255, 255, 0.25);
+      outline: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    .form-control::placeholder {
+      color: #eee;
+    }
+
+    .alert {
+      font-size: 0.9rem;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* 📨 Bouton Envoyer */
+    .btn-envoyer {
+      background: linear-gradient(135deg, var(--vert), #0ea645);
+      border: none;
+      font-size: 0.9rem;
+      padding: 10px 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(12, 139, 62, 0.4);
+      transition: all 0.2s ease-in-out;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn-envoyer:hover {
+      background: linear-gradient(135deg, #0ea645, var(--vert));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(12, 139, 62, 0.5);
+    }
+
+    .btn-envoyer i {
+      font-size: 1rem;
+    }
+
+    /* 📌 Footer */
+    footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.82rem;
+  padding: 5px 10px;              /* ⬅️ réduit */
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.footer-2cols {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;                     /* ⬅️ supprimé l'espace vertical */
+}
+
+.footer-2cols .col p {
+  margin: 2px 0;                  /* ⬅️ espace entre les lignes réduit */
+  line-height: 1.2;               /* ⬅️ compresse verticalement */
+}
+
+.footer-2cols i {
+  color: var(--vert);
+  margin-right: 5px;
+  font-size: 0.9rem;              /* ⬅️ icônes un peu plus petites */
+}
+
+.footer-copy {
+  text-align: center;
+  margin-top: 4px;                /* ⬅️ espace réduit */
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+    @media (max-width: 600px) {
+      .footer-2cols {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🧭 Barre supérieure -->
+  <div class="top-bar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" class="logo-nav">
+    </div>
+    <div class="slogan">
+      Support technique & assistance professionnelle
+    </div>
+  </div>
+
+  <!-- 📄 Formulaire -->
+  <div class="form-box">
+    <h2>Demande de support</h2>
+    <form action="{{ url_for('submit') }}" method="POST">
+      <h4>Informations client</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Entreprise *</label>
+            <input type="text" name="entreprise" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Nom du contact *</label>
+            <input type="text" name="contact_nom" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Téléphone *</label>
+            <input type="tel" name="telephone" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Adresse e-mail</label>
+            <input type="email" name="email" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <h4>Informations sur la demande</h4>
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="mb-3">
+            <label class="form-label">Titre de la demande *</label>
+            <input type="text" name="titre" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label class="form-label">Type de support *</label>
+            <select name="type_support" id="type_support" class="form-select" required>
+              <option value="">-- Sélectionner --</option>
+              <option value="Sur site">Support sur site</option>
+              <option value="À distance">Support à distance</option>
+              <option value="Livraison">Livraison</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="mb-3">
+            <label class="form-label">Détail *</label>
+            <select name="detail_support" id="detail_support" class="form-select" required>
+              <option value="">-- Sélectionner --</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 d-none" id="autre_detail_container">
+          <div class="mb-3">
+            <label class="form-label">Détail supplémentaire</label>
+            <input type="text" name="autre_detail" class="form-control">
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="mb-3">
+            <label class="form-label">Description *</label>
+            <textarea name="description" class="form-control" rows="4" maxlength="5000" required></textarea>
+            <small class="text-light">Max 5000 caractères</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert text-center">
+        ⚠️ Tout déplacement pour support est facturé <strong>3000 DA</strong>.
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" required>
+        <label class="form-check-label text-light">
+          J’ai lu et j’accepte la politique d’intervention.
+        </label>
+      </div>
+
+      <button type="submit" class="btn-envoyer">
+        <i class="fa-solid fa-paper-plane"></i>
+        Envoyer
+      </button>
+    </form>
+  </div>
+
+  <!-- 📌 Footer -->
+  <footer>
+    <div class="footer-2cols">
+      <!-- Colonne gauche -->
+      <div class="col left">
+        <p><i class="fa-solid fa-location-dot"></i> Patrimoine Algérois Villa G7 Panorama, H. Dey, Alger</p>
+        <p><i class="fa-solid fa-envelope"></i> info@mobibenz.com</p>
+        <p><i class="fa-solid fa-globe"></i> www.mobibenz.com</p>
+      </div>
+      <!-- Colonne droite -->
+      <div class="col right text-end">
+        <p><i class="fa-solid fa-phone"></i> +213 23 779 598</p>
+        <p><i class="fa-solid fa-fax"></i> +213 23 779 802</p>
+        <p><i class="fa-solid fa-mobile-screen-button"></i> +213 555 574 654 / +213 555 295 356</p>
+      </div>
+    </div>
+    <p class="footer-copy">
+      © 2025 Mobibenz Technologie — Tous droits réservés
+    </p>
+  </footer>
+
+<script>
+const typeSelect = document.getElementById('type_support');
+const detailSelect = document.getElementById('detail_support');
+const autreContainer = document.getElementById('autre_detail_container');
+
+const options = {
+  "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
+  "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"],
+  "Livraison": ["Livraison standard", "Installation sur place", "Autre"]
+};
+
+typeSelect.addEventListener('change', () => {
+  detailSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
+  if (options[typeSelect.value]) {
+    options[typeSelect.value].forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      detailSelect.appendChild(o);
+    });
+  }
+});
+
+detailSelect.addEventListener('change', () => {
+  if (detailSelect.value === "Autre") {
+    autreContainer.classList.remove('d-none');
+  } else {
+    autreContainer.classList.add('d-none');
+  }
+});
+</script>
+
+</body>
+</html>

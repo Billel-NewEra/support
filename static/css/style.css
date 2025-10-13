@@ -1,0 +1,276 @@
+:root {
+  --primary: #0c8b3e;
+  --dark: #1f1f1f;
+  --light: #f8f9fb;
+  --border: #e2e6ea;
+  --text-gray: #666;
+  --vert: #409763; /* ✅ ajoute cette ligne */
+}
+
+/* 📐 Structure globale */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--light);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--dark);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wrapper {
+  max-width: 850px;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 🧭 Header */
+.header {
+  background: #fff;
+  padding: 5px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header img {
+  height: 85px;
+  display: block;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.header h1 {
+  font-size: 18px;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 1px;
+  color: var(--dark);
+  text-align: center;
+}
+
+/* 🧾 Sections */
+.section {
+  padding: 15px 25px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+h2 {
+  font-size: 14px;
+  color: var(--primary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 15px;
+}
+
+.info-item {
+  font-size: 13px;
+}
+
+.info-item strong {
+  display: block;
+  font-weight: 700; /* ✅ Titre bien gras */
+  color: var(--dark);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ✍️ Signature */
+.signature-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 120px;
+  margin-bottom: 20px;
+}
+
+.signature-box {
+  border: 2px dashed #bbb;
+  height: 110px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-style: italic;
+  border-radius: 6px;
+}
+
+/* 📌 Footer */
+footer {
+  background: #f1f3f5;
+  padding: 4px 5px;
+  font-size: 10.5px;
+  color: #555;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.footer-2cols {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.footer-2cols .col {
+  line-height: 1.3;
+}
+
+.footer-2cols .col:first-child {
+  text-align: left;
+}
+
+.footer-2cols .col:last-child {
+  text-align: right;
+}
+
+footer p {
+  text-align: center;
+  font-size: 10px;
+  margin: 3px 0 0;
+  color: #666;
+}
+
+/* 🖨️ Bouton Impression */
+.print-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 8px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.print-btn:hover {
+  background: #08712f;
+}
+
+/* 📨 Bouton Envoyer */
+.btn-envoyer {
+  background: linear-gradient(135deg, #0c8b3e, #08712f);
+  border: none;
+  font-size: 0.9rem;
+  padding: 8px 28px;
+  border-radius: 30px;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(12, 139, 62, 0.3);
+  transition: all 0.2s ease-in-out;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-envoyer:hover {
+  background: linear-gradient(135deg, #0ea645, #0c8b3e);
+  box-shadow: 0 6px 14px rgba(12, 139, 62, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-envoyer:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(12, 139, 62, 0.3);
+}
+
+.btn-envoyer i {
+  font-size: 1rem;
+}
+
+
+/* 🟢 Bouton retour */
+.btn-retour {
+  background: linear-gradient(135deg, #0c8b3e, #0ea645);  /* ✅ plus contrasté */
+  border: none;
+  font-size: 1.1rem;
+  padding: 8px 28px;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 15px auto 0;
+  box-shadow: 0 4px 15px rgba(12, 139, 62, 0.4);
+  transition: all 0.2s ease-in-out;
+  color: #fff;                     /* ✅ texte bien lisible */
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-retour:hover {
+  background: linear-gradient(135deg, #0ea645, #0c8b3e);  /* ✅ inversion douce */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(12, 139, 62, 0.5);
+}
+
+.btn-retour i {
+  font-size: 1rem;
+}
+
+/* 🖨️ Impression A4 */
+@media print {
+  .print-btn {
+    display: none;
+  }
+
+  html, body {
+    height: 100%;
+    background: white;
+  }
+
+  .wrapper {
+    min-height: 100%;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    page-break-inside: avoid;
+  }
+
+  .section, .header, footer {
+    page-break-inside: avoid;
+  }
+
+  footer {
+    margin-top: auto;
+  }
+
+  body {
+    zoom: 0.90;
+  }
+
+  @page {
+    size: A4;
+    margin: 1cm;
+    @top-left { content: none; }
+    @top-center { content: none; }
+    @top-right { content: none; }
+    @bottom-left { content: none; }
+    @bottom-center { content: none; }
+    @bottom-right { content: none; }
+  }
+}
