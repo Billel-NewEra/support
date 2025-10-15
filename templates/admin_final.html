@@ -58,38 +58,6 @@
     .top-bar .logo-nav { height: 85px; }
     .slogan { font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); margin-top: 8px; }
 
-    /* 🧭 Barre filtres */
-    .filter-bar {
-      margin-top: 130px;
-      margin-bottom: 15px;
-      max-width: 1100px;
-      width: 100%;
-    }
-    #globalSearch {
-      min-width: 220px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-    }
-    #globalSearch::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-    #globalSearch:focus,
-    #dateFilter:focus,
-    #startDate:focus,
-    #endDate:focus {
-      outline: none;
-      box-shadow: 0 0 0 0.2rem rgba(20, 115, 230, 0.4);
-    }
-    #dateFilter, #startDate, #endDate {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-    }
-    #dateFilter option {
-      color: #000;
-    }
-
     .table-box {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -100,7 +68,7 @@
       color: #fff;
       box-shadow: 0 0 30px rgba(0,0,0,0.2);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      margin-top: 0;
+      margin-top: 150px;
       opacity: 0;
       transform: translateY(30px);
       animation: fadeInUp 0.8s ease forwards;
@@ -223,23 +191,6 @@
     <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm" style="position:absolute; right:30px; top:25px;">Déconnexion</a>
   </div>
 
-  <!-- 🧭 Barre filtres -->
-  <div class="filter-bar d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <div class="d-flex gap-2 align-items-center flex-wrap">
-      <select class="form-select form-select-sm w-auto" id="dateFilter" onchange="handleDateFilterChange(); applyFilters();">
-        <option value="all">Toutes les dates</option>
-        <option value="today">Aujourd'hui</option>
-        <option value="yesterday">Hier</option>
-        <option value="week">Cette semaine</option>
-        <option value="month">Ce mois-ci</option>
-        <option value="custom">Plage personnalisée</option>
-      </select>
-      <input type="date" class="form-control form-control-sm w-auto d-none" id="startDate" onchange="applyFilters()">
-      <input type="date" class="form-control form-control-sm w-auto d-none" id="endDate" onchange="applyFilters()">
-    </div>
-    <input type="text" class="form-control form-control-sm" id="globalSearch" placeholder="🔍 Rechercher...">
-  </div>
-
   <div class="table-box">
     <h2>📋 Liste des interventions</h2>
     <table class="table table-hover align-middle position-relative">
@@ -324,83 +275,8 @@
     <p class="footer-copy">© 2025 Mobibenz Technologie — Tous droits réservés</p>
   </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// 📅 --- Filtres date + recherche ---
-function handleDateFilterChange() {
-  const filter = document.getElementById('dateFilter').value;
-  const start = document.getElementById('startDate');
-  const end = document.getElementById('endDate');
-  if (filter === 'custom') {
-    start.classList.remove('d-none');
-    end.classList.remove('d-none');
-  } else {
-    start.classList.add('d-none');
-    end.classList.add('d-none');
-    start.value = '';
-    end.value = '';
-  }
-}
-
-function dateInRange(rowDateStr, filter) {
-  if (filter === 'all') return true;
-  const rowDate = new Date(rowDateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const start = document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value) : null;
-  const end = document.getElementById('endDate').value ? new Date(document.getElementById('endDate').value) : null;
-
-  switch (filter) {
-    case 'today':
-      return rowDate.toDateString() === today.toDateString();
-    case 'yesterday':
-      const yest = new Date(today);
-      yest.setDate(today.getDate() - 1);
-      return rowDate.toDateString() === yest.toDateString();
-    case 'week':
-      const firstDayOfWeek = new Date(today);
-      firstDayOfWeek.setDate(today.getDate() - today.getDay());
-      firstDayOfWeek.setHours(0, 0, 0, 0);
-      const endOfWeek = new Date(today);
-      endOfWeek.setHours(23, 59, 59, 999);
-      return rowDate >= firstDayOfWeek && rowDate <= endOfWeek;
-    case 'month':
-      return rowDate.getMonth() === today.getMonth() && rowDate.getFullYear() === today.getFullYear();
-    case 'custom':
-      if (!start || !end) return true;
-      return rowDate >= start && rowDate <= end;
-    default:
-      return true;
-  }
-}
-
-function applyFilters() {
-  const searchValue = document.getElementById('globalSearch').value.toLowerCase();
-  const dateFilter = document.getElementById('dateFilter').value;
-  const rows = document.querySelectorAll('tbody tr:not(.details-row)');
-
-  rows.forEach(row => {
-    const columnsText = row.innerText.toLowerCase();
-    const dateCell = row.children[5]?.innerText.trim();
-    const matchSearch = columnsText.includes(searchValue);
-    const matchDate = dateInRange(dateCell, dateFilter);
-
-    if (matchSearch && matchDate) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-      const detailRow = row.nextElementSibling;
-      if (detailRow && detailRow.classList.contains('details-row')) {
-        detailRow.style.display = 'none';
-      }
-    }
-  });
-}
-
-document.getElementById('globalSearch').addEventListener('input', applyFilters);
-
-
-// 🧭 --- Statut, menu actions, détails ---
 let openId = null;
 let currentStatusTarget = null;
 let currentActionId = null;

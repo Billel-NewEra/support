@@ -325,7 +325,7 @@
   </footer>
 
 <script>
-// 📅 --- Filtres date + recherche ---
+// 📅 Gestion affichage champs de dates
 function handleDateFilterChange() {
   const filter = document.getElementById('dateFilter').value;
   const start = document.getElementById('startDate');
@@ -360,9 +360,11 @@ function dateInRange(rowDateStr, filter) {
     case 'week':
       const firstDayOfWeek = new Date(today);
       firstDayOfWeek.setDate(today.getDate() - today.getDay());
-      firstDayOfWeek.setHours(0, 0, 0, 0);
+      firstDayOfWeek.setHours(0, 0, 0, 0);  // début de la semaine
+      
       const endOfWeek = new Date(today);
-      endOfWeek.setHours(23, 59, 59, 999);
+      endOfWeek.setHours(23, 59, 59, 999);  // fin de la journée actuelle
+      
       return rowDate >= firstDayOfWeek && rowDate <= endOfWeek;
     case 'month':
       return rowDate.getMonth() === today.getMonth() && rowDate.getFullYear() === today.getFullYear();
@@ -398,95 +400,6 @@ function applyFilters() {
 }
 
 document.getElementById('globalSearch').addEventListener('input', applyFilters);
-
-
-// 🧭 --- Statut, menu actions, détails ---
-let openId = null;
-let currentStatusTarget = null;
-let currentActionId = null;
-
-function toggleDetails(id) {
-  const row = document.getElementById(`row-details-${id}`);
-  const currentDetails = document.getElementById(`details-${id}`);
-  const currentIcon = document.getElementById(`icon-${id}`);
-  const isOpen = currentDetails.classList.contains('open');
-
-  document.querySelectorAll('.details-content').forEach(el => el.classList.remove('open'));
-  document.querySelectorAll('.details-row').forEach(el => el.classList.remove('open'));
-  document.querySelectorAll('.accordion-icon').forEach(icon => icon.classList.remove('open'));
-
-  if (!isOpen) {
-    row.classList.add('open');
-    currentDetails.classList.add('open');
-    currentIcon.classList.add('open');
-    openId = id;
-  } else {
-    openId = null;
-  }
-}
-
-function openStatusMenu(e, id) {
-  e.stopPropagation();
-  currentStatusTarget = document.getElementById(`status-${id}`);
-  const rect = currentStatusTarget.getBoundingClientRect();
-  const dropdown = document.getElementById('status-dropdown');
-  dropdown.style.top = `${rect.bottom + window.scrollY}px`;
-  dropdown.style.left = `${rect.left}px`;
-  dropdown.classList.remove('d-none');
-}
-
-document.querySelectorAll('.status-option').forEach(opt => {
-  opt.addEventListener('click', () => {
-    const value = opt.getAttribute('data-value');
-    const id = currentStatusTarget.id.split('-')[1];
-    currentStatusTarget.textContent = value;
-    currentStatusTarget.className = `badge status-badge ${getStatusClass(value)}`;
-    document.getElementById('status-dropdown').classList.add('d-none');
-    fetch(`/update_statut/${id}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ new_statut: value })
-    });
-  });
-});
-
-function openActionMenu(e, id) {
-  e.stopPropagation();
-  currentActionId = id;
-  const rect = e.currentTarget.getBoundingClientRect();
-  const dropdown = document.getElementById('action-dropdown');
-  const spaceRight = window.innerWidth - rect.right;
-  const menuWidth = dropdown.offsetWidth;
-  dropdown.style.top = `${rect.bottom + window.scrollY}px`;
-  dropdown.style.left = (spaceRight < menuWidth)
-    ? `${rect.right - menuWidth}px`
-    : `${rect.left}px`;
-  dropdown.classList.remove('d-none');
-}
-
-function redirectTo(action) {
-  if (!currentActionId) return;
-  if (action === 'edit') window.location.href = `/edit/${currentActionId}`;
-  if (action === 'print') window.location.href = `/print/${currentActionId}`;
-  if (action === 'delete') {
-    if (confirm('Supprimer cette intervention ?')) {
-      fetch(`/delete/${currentActionId}`, { method: 'POST' })
-        .then(() => window.location.reload());
-    }
-  }
-}
-
-document.addEventListener('click', () => {
-  document.getElementById('status-dropdown').classList.add('d-none');
-  document.getElementById('action-dropdown').classList.add('d-none');
-});
-
-function getStatusClass(value) {
-  if (value === 'En attente') return 'bg-warning text-dark';
-  if (value === 'En cours') return 'bg-primary';
-  if (value === 'Résolue') return 'bg-success';
-  return 'bg-secondary';
-}
 </script>
 </body>
 </html>

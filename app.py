@@ -206,6 +206,45 @@ def print_intervention(id):
 
     return render_template('print_intervention.html', d=demande, year=year)
 
+
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_demande(id):
+    conn = sqlite3.connect('demandes.db')
+    c = conn.cursor()
+
+    if request.method == 'POST':
+        telephone = request.form['telephone']
+        email = request.form['email']
+        titre = request.form['titre']
+        description = request.form['description']
+        type_support = request.form['type_support']
+        detail_support = request.form['detail_support']
+        autre_detail = request.form.get('autre_detail', '')
+        express = 1 if 'express' in request.form else 0
+
+        c.execute("""
+            UPDATE demandes
+            SET telephone = ?, email = ?, titre = ?, description = ?,
+                type_support = ?, detail_support = ?, autre_detail = ?, express = ?
+            WHERE id = ?
+        """, (telephone, email, titre, description, type_support, detail_support, autre_detail, express, id))
+        conn.commit()
+        conn.close()
+        flash("✅ Intervention mise à jour avec succès.", "success")
+        return redirect(url_for('admin'))
+
+    # GET — on récupère les infos actuelles
+    c.execute("""
+        SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
+               titre, description, type_support, detail_support, autre_detail, express
+        FROM demandes WHERE id = ?
+    """, (id,))
+    demande = c.fetchone()
+    conn.close()
+
+    return render_template('edit.html', d=demande)
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
