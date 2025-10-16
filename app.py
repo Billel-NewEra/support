@@ -4,6 +4,10 @@ from datetime import datetime
 from flask_mail import Mail, Message
 from functools import wraps
 import config
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "demandes.db")
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -21,7 +25,7 @@ mail = Mail(app)
 
 # 🗃️ Initialisation DB
 def init_db():
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
     CREATE TABLE IF NOT EXISTS demandes (
@@ -47,7 +51,7 @@ def init_db():
 # 🧮 Génération du numéro d'intervention
 def generate_intervention_number():
     today_str = datetime.now().strftime("%Y%m%d")
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT COUNT(*) FROM demandes WHERE date LIKE ?", (f"{datetime.now().strftime('%Y-%m-%d')}%",))
     count_today = c.fetchone()[0] + 1
@@ -88,7 +92,7 @@ def submit():
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     statut = "En attente"
 
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         INSERT INTO demandes (
@@ -147,7 +151,7 @@ def logout():
 @app.route('/admin')
 @login_required
 def admin():
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
                  titre, type_support, detail_support, autre_detail, express, date, statut
@@ -161,7 +165,7 @@ def admin():
 @login_required
 def update_statut(id):
     new_statut = request.form['new_statut']
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("UPDATE demandes SET statut = ? WHERE id = ?", (new_statut, id))
     conn.commit()
@@ -172,7 +176,7 @@ def update_statut(id):
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_demande(id):
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("SELECT statut FROM demandes WHERE id = ?", (id,))
     result = c.fetchone()
@@ -190,7 +194,7 @@ def delete_demande(id):
 # 🖨️ Page imprimable
 @app.route('/print/<int:id>')
 def print_intervention(id):
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
                  titre, type_support, detail_support, autre_detail, express, date, statut
@@ -205,7 +209,7 @@ def print_intervention(id):
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_demande(id):
-    conn = sqlite3.connect('demandes.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
     if request.method == 'POST':
