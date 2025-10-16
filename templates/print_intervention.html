@@ -25,10 +25,6 @@
                 {{ d[1] }}
             </div>
             <div class="info-item">
-                <strong>Date & Heure</strong>
-                {{ d[11] }}
-            </div>
-            <div class="info-item">
                 <strong>Technicien</strong>
                 —
             </div>
@@ -51,11 +47,11 @@
         <h2>Détails de l'intervention</h2>
         <div class="info-grid">
             <div class="info-item"><strong>Titre</strong>{{ d[6] }}</div>
-            <div class="info-item"><strong>Type</strong>{{ d[8] }}</div>
-            <div class="info-item" style="grid-column: 1 / span 2;">
-                <strong>Détail</strong>
-                {{ d[9] }} {% if d[10] %} — {{ d[10] }}{% endif %}
-            </div>
+            <div class="info-item"><strong>Type</strong>{{ d[7] }}</div>
+            <div class="info-item"><strong>Détail</strong>{{ d[8] }}</div>
+            {% if d[9] %}
+            <div class="info-item"><strong>Détail supplémentaire</strong>{{ d[9] }}</div>
+            {% endif %}
         </div>
     </div>
 

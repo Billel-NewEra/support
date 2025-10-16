@@ -18,6 +18,10 @@
       --row-border: rgba(255, 255, 255, 0.15);
     }
 
+    html {
+      overflow-y: scroll;
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -254,6 +258,7 @@
       pointer-events: none;
     }
     .custom-pagination .page-item span { cursor: default; }
+
   </style>
 </head>
 <body>
@@ -285,6 +290,7 @@
 
   <div class="table-box">
     <h2>📋 Liste des interventions</h2>
+    <div class="table-container">
     <table class="table table-hover align-middle position-relative">
       <thead>
         <tr>
@@ -305,13 +311,13 @@
           <td>{{ d[0] }}</td>
           <td>{{ d[1] }}</td>
           <td>{{ d[2] }}</td>
-          <td>{{ d[8] }}</td>
-          <td>{{ d[12] }}</td>
+          <td>{{ d[7] }}</td>
+          <td>{{ d[11] }}</td>
           <td>
             <span class="badge status-badge 
-              {% if d[13] == 'En attente' %}bg-warning text-dark{% elif d[13] == 'En cours' %}bg-primary{% else %}bg-success{% endif %}"
+              {% if d[12] == 'En attente' %}bg-warning text-dark{% elif d[12] == 'En cours' %}bg-primary{% else %}bg-success{% endif %}"
               id="status-{{ d[0] }}" onclick="openStatusMenu(event, {{ d[0] }})">
-              {{ d[13] }}
+              {{ d[12] }}
             </span>
           </td>
           <td>
@@ -328,8 +334,14 @@
                 <strong>Contact :</strong> {{ d[3] }}<br>
                 <strong>Téléphone :</strong> {{ d[4] }}<br>
                 <strong>Email :</strong> {{ d[5] }}<br>
-                <strong>Description :</strong> {{ d[7] }}<br>
-                <strong>Express :</strong> {% if d[11] == 1 %}Oui{% else %}Non{% endif %}
+                <strong>Type de support :</strong> {{ d[7] }}<br>
+                <strong>Détail :</strong> {{ d[8] }}<br>
+                {% if d[9] %}
+                <strong>Détail supplémentaire :</strong> {{ d[9] }}<br>
+                {% endif %}
+                {% if d[10] == 1 %}
+                <strong>Express: </strong> Oui<br>
+                {% endif %}
               </div>
             </div>
           </td>
@@ -337,6 +349,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
 
     <!-- 🔸 Pagination INSIDE the container -->
     <nav class="pagination-nav" id="paginationContainer"></nav>

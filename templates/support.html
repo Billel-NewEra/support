@@ -353,6 +353,13 @@
           </div>
         </div>
 
+        <div class="col-12 d-none" id="autre_detail_container">
+          <div class="mb-3">
+            <label class="form-label">Détail supplémentaire</label>
+            <input type="text" name="autre_detail" class="form-control">
+          </div>
+        </div>
+
         <!-- 🟡 Bloc frais + express -->
         <div class="col-12 d-none" id="support-alert-wrapper">
           <div id="support-alert" class="alert">
@@ -360,23 +367,9 @@
             <div class="form-check d-none" id="express-container">
               <input class="form-check-input" type="checkbox" id="express-option" name="express">
               <label class="form-check-label text-light" for="express-option">
-                Service express (intervention sous 24h) <strong>+ 5000 DA</strong>
+                L'option Service express (intervention sous 24 h) est disponible avec un supplément de <strong>5000 DA</strong>
               </label>
             </div>
-          </div>
-        </div>
-
-        <div class="col-12 d-none" id="autre_detail_container">
-          <div class="mb-3">
-            <label class="form-label">Détail supplémentaire</label>
-            <input type="text" name="autre_detail" class="form-control">
-          </div>
-        </div>
-        <div class="col-12">
-          <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="4" maxlength="5000"></textarea>
-            <small class="text-light">Max 5000 caractères</small>
           </div>
         </div>
       </div>
@@ -415,27 +408,54 @@
   </footer>
 
 <script>
+// 🎯 Récupération des éléments
 const typeSelect = document.getElementById('type_support');
 const detailSelect = document.getElementById('detail_support');
 const autreContainer = document.getElementById('autre_detail_container');
+const autreInput = autreContainer.querySelector('input[name="autre_detail"]');
 
 const alertWrapper = document.getElementById('support-alert-wrapper');
 const supportMessage = document.getElementById('support-message');
 const expressContainer = document.getElementById('express-container');
 const expressOption = document.getElementById('express-option');
 
+// 🟡 Zone pour message d'erreur visuel
+let errorAlert = null;
+function showError(message) {
+  if (!errorAlert) {
+    errorAlert = document.createElement('div');
+    errorAlert.className = 'alert alert-danger mt-2';
+    errorAlert.style.fontSize = '0.9rem';
+    autreContainer.appendChild(errorAlert);
+  }
+  errorAlert.textContent = message;
+  errorAlert.classList.remove('d-none');
+}
+
+function hideError() {
+  if (errorAlert) errorAlert.classList.add('d-none');
+}
+
+// 🧾 Options par type
 const options = {
   "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
   "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"],
   "Livraison": ["Livraison standard", "Installation sur place", "Autre"]
 };
 
+// 📌 Changement du type
 typeSelect.addEventListener('change', () => {
   detailSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
   alertWrapper.classList.add('d-none');
   alertWrapper.classList.remove('show');
   expressContainer.classList.add('d-none');
   expressOption.checked = false;
+
+  // 🔸 Réinitialise champ "Autre"
+  autreContainer.classList.add('d-none');
+  autreInput.value = '';
+  autreInput.removeAttribute('required');
+  hideError();
 
   if (options[typeSelect.value]) {
     options[typeSelect.value].forEach(opt => {
@@ -447,7 +467,7 @@ typeSelect.addEventListener('change', () => {
   }
 
   if (typeSelect.value === "Sur site") {
-    supportMessage.textContent = "⚠️ Des frais de déplacement de 3000 DA s'appliquent.";
+    supportMessage.textContent = "⚠️ Les interventions sur site entraînent des frais de déplacement de 3000 DA, en plus du coût de l’intervention.";
     alertWrapper.classList.remove('d-none');
     setTimeout(() => alertWrapper.classList.add('show'), 20);
     expressContainer.classList.remove('d-none');
@@ -458,11 +478,27 @@ typeSelect.addEventListener('change', () => {
   }
 });
 
+// 📌 Changement du détail
 detailSelect.addEventListener('change', () => {
   if (detailSelect.value === "Autre") {
     autreContainer.classList.remove('d-none');
+    autreInput.setAttribute('required', 'required');
   } else {
     autreContainer.classList.add('d-none');
+    autreInput.value = '';
+    autreInput.removeAttribute('required');
+    hideError();
+  }
+});
+
+// ✅ Validation avant soumission
+document.querySelector('form').addEventListener('submit', (e) => {
+  const isAutre = detailSelect.value === "Autre";
+
+  if (isAutre && autreInput.value.trim() === '') {
+    e.preventDefault();
+    autreInput.focus();
+    showError("Veuillez préciser le détail supplémentaire.");
   }
 });
 </script>

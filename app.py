@@ -32,11 +32,11 @@ def init_db():
         telephone TEXT,
         email TEXT,
         titre TEXT,
-        description TEXT,
+        -- 🗑️ description supprimée
         type_support TEXT,
         detail_support TEXT,
         autre_detail TEXT,
-        express INTEGER DEFAULT 0,   -- 🆕 service express
+        express INTEGER DEFAULT 0,
         date TEXT,
         statut TEXT
     )
@@ -76,17 +76,12 @@ def submit():
     telephone = request.form['telephone']
     email = request.form['email']
     titre = request.form['titre']
-    description = request.form['description'].strip()
-
-    # 🧹 Limite max description
-    if len(description) > 5000:
-        description = description[:5000]
+    # 🗑️ description retirée ici
 
     type_support = request.form['type_support']
     detail_support = request.form['detail_support']
     autre_detail = request.form.get('autre_detail', '')
 
-    # 🟢 Service express
     express = 1 if 'express' in request.form else 0
 
     intervention_numero = generate_intervention_number()
@@ -98,12 +93,12 @@ def submit():
     c.execute("""
         INSERT INTO demandes (
             intervention_numero, entreprise, contact_nom, telephone, email,
-            titre, description, type_support, detail_support, autre_detail,
+            titre, type_support, detail_support, autre_detail,
             express, date, statut
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (intervention_numero, entreprise, contact_nom, telephone, email,
-          titre, description, type_support, detail_support, autre_detail,
-          express, date, statut))
+          titre, type_support, detail_support, autre_detail,
+          express, date, statut))  # 🗑️ description retirée ici
     conn.commit()
     conn.close()
 
@@ -155,8 +150,8 @@ def admin():
     conn = sqlite3.connect('demandes.db')
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
-                 titre, description, type_support, detail_support, autre_detail, express, date, statut
-                 FROM demandes ORDER BY date DESC""")
+                 titre, type_support, detail_support, autre_detail, express, date, statut
+                 FROM demandes ORDER BY date DESC""")  # 🗑️ description retirée ici
     rows = c.fetchall()
     conn.close()
     return render_template('admin.html', demandes=rows)
@@ -198,15 +193,15 @@ def print_intervention(id):
     conn = sqlite3.connect('demandes.db')
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
-                 titre, description, type_support, detail_support, autre_detail, express, date, statut
-                 FROM demandes WHERE id = ?""", (id,))
+                 titre, type_support, detail_support, autre_detail, express, date, statut
+                 FROM demandes WHERE id = ?""", (id,))  # 🗑️ description retirée ici
     demande = c.fetchone()
     conn.close()
     year = datetime.now().year
 
     return render_template('print_intervention.html', d=demande, year=year)
 
-
+# ✏️ Edition intervention
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_demande(id):
@@ -217,7 +212,7 @@ def edit_demande(id):
         telephone = request.form['telephone']
         email = request.form['email']
         titre = request.form['titre']
-        description = request.form['description']
+        # 🗑️ description retirée ici
         type_support = request.form['type_support']
         detail_support = request.form['detail_support']
         autre_detail = request.form.get('autre_detail', '')
@@ -225,10 +220,10 @@ def edit_demande(id):
 
         c.execute("""
             UPDATE demandes
-            SET telephone = ?, email = ?, titre = ?, description = ?,
+            SET telephone = ?, email = ?, titre = ?,
                 type_support = ?, detail_support = ?, autre_detail = ?, express = ?
             WHERE id = ?
-        """, (telephone, email, titre, description, type_support, detail_support, autre_detail, express, id))
+        """, (telephone, email, titre, type_support, detail_support, autre_detail, express, id))  # 🗑️ description retirée ici
         conn.commit()
         conn.close()
         flash("✅ Intervention mise à jour avec succès.", "success")
@@ -237,9 +232,9 @@ def edit_demande(id):
     # GET — on récupère les infos actuelles
     c.execute("""
         SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
-               titre, description, type_support, detail_support, autre_detail, express
+               titre, type_support, detail_support, autre_detail, express
         FROM demandes WHERE id = ?
-    """, (id,))
+    """, (id,))  # 🗑️ description retirée ici
     demande = c.fetchone()
     conn.close()
 

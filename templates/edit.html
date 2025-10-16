@@ -27,27 +27,22 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Description</label>
-      <textarea name="description" class="form-control" rows="4">{{ d[7] }}</textarea>
-    </div>
-
-    <div class="mb-3">
       <label class="form-label">Type de support</label>
-      <input type="text" name="type_support" class="form-control" value="{{ d[8] }}">
+      <input type="text" name="type_support" class="form-control" value="{{ d[7] }}">
     </div>
 
     <div class="mb-3">
       <label class="form-label">Détail support</label>
-      <input type="text" name="detail_support" class="form-control" value="{{ d[9] }}">
+      <input type="text" name="detail_support" class="form-control" value="{{ d[8] }}">
     </div>
 
     <div class="mb-3">
       <label class="form-label">Autre détail</label>
-      <input type="text" name="autre_detail" class="form-control" value="{{ d[10] }}">
+      <input type="text" name="autre_detail" class="form-control" value="{{ d[9] }}">
     </div>
 
     <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" name="express" id="express" {% if d[11] == 1 %}checked{% endif %}>
+      <input class="form-check-input" type="checkbox" name="express" id="express" {% if d[10] == 1 %}checked{% endif %}>
       <label class="form-check-label" for="express">
         🚀 Service express
       </label>
