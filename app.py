@@ -240,6 +240,7 @@ def edit_demande(id):
 
     return render_template('edit.html', d=demande)
 
+# ✅ Appel immédiat au démarrage, que ce soit avec Flask, Gunicorn ou autre
+init_db()
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
