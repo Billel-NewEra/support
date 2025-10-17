@@ -73,7 +73,7 @@ def support_form():
     return render_template('support.html')
 
 # 📥 Soumission formulaire
-@app.route('/support/submit', methods=['POST'])
+@app.route('/submit', methods=['POST'])
 def submit():
     entreprise = request.form['entreprise']
     contact_nom = request.form['contact_nom']
@@ -128,13 +128,13 @@ Support Mobibenz
     return redirect(url_for('merci', intervention=intervention_numero))
 
 # ✅ Page de remerciement
-@app.route('/support/merci')
+@app.route('/merci')
 def merci():
     intervention = request.args.get('intervention')
     return render_template('merci.html', intervention=intervention)
 
 # 🔐 Login admin
-@app.route('/support/admin/login', methods=['GET', 'POST'])
+@app.route('/admin/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         if request.form['username'] == config.ADMIN_USERNAME and request.form['password'] == config.ADMIN_PASSWORD:
@@ -142,13 +142,13 @@ def login():
             return redirect(url_for('admin'))
     return render_template('login.html')
 
-@app.route('/support/admin/logout')
+@app.route('/admin/logout')
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
 
 # 📊 Interface admin
-@app.route('/support/admin')
+@app.route('/admin')
 @login_required
 def admin():
     conn = sqlite3.connect(DB_PATH)
@@ -161,7 +161,7 @@ def admin():
     return render_template('admin.html', demandes=rows)
 
 # 📝 Maj statut
-@app.route('/support/update_statut/<int:id>', methods=['POST'])
+@app.route('/update_statut/<int:id>', methods=['POST'])
 @login_required
 def update_statut(id):
     new_statut = request.form['new_statut']
@@ -173,7 +173,7 @@ def update_statut(id):
     return redirect(url_for('admin'))
 
 # 🗑️ Suppression
-@app.route('/support/delete/<int:id>', methods=['POST'])
+@app.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_demande(id):
     conn = sqlite3.connect(DB_PATH)
@@ -192,7 +192,7 @@ def delete_demande(id):
     return redirect(url_for('admin'))
 
 # 🖨️ Page imprimable
-@app.route('/support/print/<int:id>')
+@app.route('/print/<int:id>')
 def print_intervention(id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -206,7 +206,7 @@ def print_intervention(id):
     return render_template('print_intervention.html', d=demande, year=year)
 
 # ✏️ Edition intervention
-@app.route('/support/edit/<int:id>', methods=['GET', 'POST'])
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_demande(id):
     conn = sqlite3.connect(DB_PATH)
