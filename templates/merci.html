@@ -89,7 +89,7 @@
   <p>Numéro d'intervention :</p>
   <p class="numero">{{ request.args.get('intervention') }}</p>
   <p>Veuillez conserver ce numéro pour tout suivi.</p>
-  <a href="/support" class="btn-retour">
+  <a href="{{ url_for('support_form') }}" class="btn-retour">
     <i class="fa-solid fa-arrow-left"></i>
     Retour
   </a>
