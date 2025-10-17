@@ -68,7 +68,7 @@ def login_required(f):
     return decorated_function
 
 # 🌐 Formulaire client
-@app.route('/support')
+@app.route('/')
 def support_form():
     return render_template('support.html')
 
