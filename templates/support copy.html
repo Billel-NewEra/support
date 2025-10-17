@@ -254,32 +254,11 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
-    /* ✅ Footer mobile corrigé */
     @media (max-width: 600px) {
       .footer-2cols {
         flex-direction: column;
-        text-align: left;
+        text-align: center;
         gap: 6px;
-      }
-
-      .footer-2cols .col {
-        width: 100%;
-      }
-
-      .footer-2cols .col p {
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        text-align: left;
-      }
-
-      .footer-2cols .col i {
-        margin-right: 8px;
-        flex-shrink: 0;
-      }
-
-      .col.right {
-        text-align: left !important;
       }
     }
 
