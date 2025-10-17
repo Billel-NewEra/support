@@ -12,6 +12,10 @@ DB_PATH = os.path.join(BASE_DIR, "demandes.db")
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 
+@app.before_request
+def set_script_name():
+    request.environ['SCRIPT_NAME'] = '/support'
+
 # 📬 Configuration Flask-Mail
 app.config.update(
     MAIL_SERVER=config.MAIL_SERVER,
