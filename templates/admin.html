@@ -407,6 +407,7 @@ let pairs = [];            // [{main: <tr>, details: <tr>}]
 let filteredIdx = [];      // indices des lignes visibles après filtre
 let currentPage = 1;       // page courante (1-based)
 let openDetailsId = null;  // pour garder l’état "ouvert" si la ligne reste visible
+const base = "{{ request.script_root }}";
 
 function handleDateFilterChange() {
   const filter = document.getElementById('dateFilter').value;
@@ -661,11 +662,12 @@ function openActionMenu(e, id) {
 
 function redirectTo(action) {
   if (!currentActionId) return;
-  if (action === 'edit') window.location.href = `/edit/${currentActionId}`;
-  if (action === 'print') window.location.href = `/print/${currentActionId}`;
+
+  if (action === 'edit') window.location.href = `${base}/edit/${currentActionId}`;
+  if (action === 'print') window.location.href = `${base}/print/${currentActionId}`;
   if (action === 'delete') {
     if (confirm('Supprimer cette intervention ?')) {
-      fetch(`/delete/${currentActionId}`, { method: 'POST' })
+      fetch(`${base}/delete/${currentActionId}`, { method: 'POST' })
         .then(() => window.location.reload());
     }
   }
