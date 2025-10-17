@@ -220,7 +220,7 @@
 
       opacity: 0;
       animation: footerReveal 1.2s ease-out forwards;
-      animation-delay: 3s; /* ⏳ Apparition bien après */
+      animation-delay: 3s;
     }
 
     @keyframes footerReveal {
@@ -255,11 +255,32 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
+    /* ✅ Footer mobile corrigé */
     @media (max-width: 600px) {
       .footer-2cols {
         flex-direction: column;
-        text-align: center;
+        text-align: left;
         gap: 6px;
+      }
+
+      .footer-2cols .col {
+        width: 100%;
+      }
+
+      .footer-2cols .col p {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .footer-2cols .col i {
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+
+      .col.right {
+        text-align: left !important;
       }
     }
   </style>
@@ -279,7 +300,7 @@
 
   <!-- 🧭 HEADER -->
   <header>
-    <img src="img/logo.jpg" alt="Mobibenz Logo">
+    <img src="../static/img/logo.jpg" alt="Mobibenz Logo">
     <h1>Bienvenue chez Mobibenz</h1>
     <p>Solutions technologiques et support professionnel</p>
   </header>
@@ -287,7 +308,7 @@
   <!-- 💬 SECTION CENTRALE -->
   <div class="content">
     <h2>Besoin d’une assistance technique rapide et fiable&nbsp;?</h2>
-    <a href="/support" class="cta-btn">
+    <a href="http://127.0.0.1:5000/" class="cta-btn">
       <i class="fa-solid fa-headset"></i>
       Accéder au support
     </a>
