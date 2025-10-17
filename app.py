@@ -5,9 +5,11 @@ from flask_mail import Mail, Message
 from functools import wraps
 import config
 import os
+from zoneinfo import ZoneInfo
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "demandes.db")
+TZ = ZoneInfo("Africa/Algiers")
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -26,6 +28,9 @@ app.config.update(
     MAIL_DEFAULT_SENDER=config.MAIL_DEFAULT_SENDER
 )
 mail = Mail(app)
+
+def now_local():
+    return datetime.now(TZ)
 
 # 🗃️ Initialisation DB
 def init_db():
@@ -54,10 +59,10 @@ def init_db():
 
 # 🧮 Génération du numéro d'intervention
 def generate_intervention_number():
-    today_str = datetime.now().strftime("%Y%m%d")
+    today_str = now_local().strftime("%Y%m%d")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM demandes WHERE date LIKE ?", (f"{datetime.now().strftime('%Y-%m-%d')}%",))
+    c.execute("SELECT COUNT(*) FROM demandes WHERE date LIKE ?", (f"{now_local().strftime('%Y-%m-%d')}%",))
     count_today = c.fetchone()[0] + 1
     conn.close()
     return f"MBZ-{today_str}-{count_today:04d}"
@@ -93,7 +98,7 @@ def submit():
     express = 1 if 'express' in request.form else 0
 
     intervention_numero = generate_intervention_number()
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = now_local().strftime("%Y-%m-%d %H:%M:%S")
     statut = "En attente"
 
     conn = sqlite3.connect(DB_PATH)
@@ -205,7 +210,7 @@ def print_intervention(id):
                  FROM demandes WHERE id = ?""", (id,))  # 🗑️ description retirée ici
     demande = c.fetchone()
     conn.close()
-    year = datetime.now().year
+    year = now_local().year
 
     return render_template('print_intervention.html', d=demande, year=year)
 
