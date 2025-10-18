@@ -2,9 +2,6 @@
 {% block title %}Demande de support - Mobibenz{% endblock %}
 
 {% block head_extra %}
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <style>
   .form-box {
     background: rgba(255, 255, 255, 0.1);
@@ -68,7 +65,9 @@
     color: #fff;
   }
 
-  .form-control::placeholder { color: #eee; }
+  .form-control::placeholder {
+    color: #eee;
+  }
 
   .alert {
     font-size: 0.9rem;
@@ -101,7 +100,9 @@
     box-shadow: 0 6px 20px rgba(12, 139, 62, 0.5);
   }
 
-  .btn-envoyer i { font-size: 1rem; }
+  .btn-envoyer i {
+    font-size: 1rem;
+  }
 
   #support-alert-wrapper {
     width: 100%;
@@ -138,6 +139,7 @@
     margin-left: 6px;
   }
 
+  /* ✅ Style du select identique à la version originale */
   select, select option {
     color: #1f1f1f;
     background-color: #ffffff;
@@ -152,29 +154,8 @@
     transition: all 0.2s ease-in-out;
   }
 
-  .form-select:valid { color: #e7f59a; }
-
-  /* 💄 Style harmonisé pour Select2 */
-  .select2-container--default .select2-selection--single {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    height: 38px;
-    display: flex;
-    align-items: center;
-    border-radius: 6px;
-  }
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #fff;
-    line-height: 38px;
-  }
-  .select2-container--default .select2-selection--single .select2-selection__arrow b {
-    border-color: #fff transparent transparent transparent;
-  }
-  .select2-dropdown { background: #fff; color: #000; border-radius: 6px; }
-  .select2-search__field { color: #000; }
-  .select2-container--default.select2-container--focus .select2-selection--single {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  .form-select:valid {
+    color: #e7f59a;
   }
 </style>
 {% endblock %}
@@ -183,28 +164,12 @@
 <div class="form-box">
   <h2>Demande de support</h2>
   <form action="{{ url_for('submit') }}" method="POST">
-
     <h4>Informations client</h4>
-    <div class="mb-3">
-      <label class="form-label">Êtes-vous déjà client ? *</label>
-      <div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="client_exist" id="clientOui" value="oui" required>
-          <label class="form-check-label" for="clientOui">Oui</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="client_exist" id="clientNon" value="non">
-          <label class="form-check-label" for="clientNon">Non</label>
-        </div>
-      </div>
-    </div>
-
     <div class="row g-3">
       <div class="col-md-6">
         <div class="mb-3">
           <label class="form-label">Entreprise *</label>
-          <input type="text" id="entrepriseInput" name="entreprise" class="form-control" required>
-          <select id="entrepriseSelect" class="form-select d-none"></select>
+          <input type="text" name="entreprise" class="form-control" required>
         </div>
       </div>
       <div class="col-md-6">
@@ -294,87 +259,12 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
-const entreprisesExistantes = [
-  "Mobibenz Technologie",
-  "Salpac",
-  "Imprimerie ABC",
-  "Packaging Plus",
-  "Tech Solutions",
-  "GraphiPrint",
-  "Papier Pro",
-  "Alger Print",
-  "Press&Pack",
-  "Digital Print"
-];
-
-const radioOui = document.getElementById('clientOui');
-const radioNon = document.getElementById('clientNon');
-const inputEntreprise = document.getElementById('entrepriseInput');
-const selectEntreprise = document.getElementById('entrepriseSelect');
-let select2Initialized = false;
-
-// Remplissage des options
-entreprisesExistantes.forEach(nom => {
-  const opt = document.createElement('option');
-  opt.value = nom;
-  opt.textContent = nom;
-  selectEntreprise.appendChild(opt);
-});
-
-function modeNouveauClient() {
-  if (select2Initialized) {
-    $(selectEntreprise).select2('destroy');
-    select2Initialized = false;
-  }
-  selectEntreprise.classList.add('d-none');
-  selectEntreprise.removeAttribute('name');
-  selectEntreprise.required = false;
-
-  inputEntreprise.classList.remove('d-none');
-  inputEntreprise.setAttribute('name', 'entreprise');
-  inputEntreprise.required = true;
-  inputEntreprise.value = '';
-}
-
-function modeClientExistant() {
-  inputEntreprise.classList.add('d-none');
-  inputEntreprise.removeAttribute('name');
-  inputEntreprise.required = false;
-
-  selectEntreprise.classList.remove('d-none');
-  selectEntreprise.setAttribute('name', 'entreprise');
-  selectEntreprise.required = true;
-
-  if (!select2Initialized) {
-    $(selectEntreprise).select2({
-      placeholder: "Sélectionnez une entreprise",
-      allowClear: false,
-      width: '100%'
-    });
-
-    // 🪄 Ajout du focus automatique sur le champ de recherche
-    $(selectEntreprise).on('select2:open', () => {
-      document.querySelector('.select2-search__field').focus();
-    });
-    
-    select2Initialized = true;
-  }
-  $(selectEntreprise).val('').trigger('change');
-}
-
-radioOui.addEventListener('change', modeClientExistant);
-radioNon.addEventListener('change', modeNouveauClient);
-modeNouveauClient();
-
-// ------- Logique support (inchangée) -------
 const typeSelect = document.getElementById('type_support');
 const detailSelect = document.getElementById('detail_support');
 const autreContainer = document.getElementById('autre_detail_container');
 const autreInput = autreContainer.querySelector('input[name="autre_detail"]');
+
 const alertWrapper = document.getElementById('support-alert-wrapper');
 const supportMessage = document.getElementById('support-message');
 const expressContainer = document.getElementById('express-container');
@@ -391,7 +281,10 @@ function showError(message) {
   errorAlert.textContent = message;
   errorAlert.classList.remove('d-none');
 }
-function hideError() { if (errorAlert) errorAlert.classList.add('d-none'); }
+
+function hideError() {
+  if (errorAlert) errorAlert.classList.add('d-none');
+}
 
 const options = {
   "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
