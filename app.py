@@ -99,7 +99,7 @@ def submit():
 
     # Si email est vide → on le remplace par None (pour insertion NULL en base)
     if not email:
-        email = None
+        email = "None@gmail.com"
 
     intervention_numero = generate_intervention_number()
     date = now_local().strftime("%Y-%m-%d %H:%M:%S")
