@@ -43,7 +43,7 @@ def init_db():
         entreprise TEXT,
         contact_nom TEXT,
         telephone TEXT,
-        email TEXT NULL,
+        email TEXT,
         titre TEXT,
         -- 🗑️ description supprimée
         type_support TEXT,
@@ -84,22 +84,18 @@ def support_form():
 # 📥 Soumission formulaire
 @app.route('/submit', methods=['POST'])
 def submit():
-    entreprise = request.form.get('entreprise', '').strip()
-    contact_nom = request.form.get('contact_nom', '').strip()
-    telephone = request.form.get('telephone', '').strip()
-    email = request.form.get('email', '').strip()   # ✅ .get() protège contre KeyError
-    titre = request.form.get('titre', '').strip()
+    entreprise = request.form['entreprise']
+    contact_nom = request.form['contact_nom']
+    telephone = request.form['telephone']
+    email = request.form['email']
+    titre = request.form['titre']
     # 🗑️ description retirée ici
 
-    type_support = request.form.get('type_support', '').strip()
-    detail_support = request.form.get('detail_support', '').strip()
-    autre_detail = request.form.get('autre_detail', '').strip()
+    type_support = request.form['type_support']
+    detail_support = request.form['detail_support']
+    autre_detail = request.form.get('autre_detail', '')
 
     express = 1 if 'express' in request.form else 0
-
-    # Si email est vide → on le remplace par None (pour insertion NULL en base)
-    if not email:
-        email = None
 
     intervention_numero = generate_intervention_number()
     date = now_local().strftime("%Y-%m-%d %H:%M:%S")
@@ -119,26 +115,7 @@ def submit():
     conn.commit()
     conn.close()
 
-#     # ✉️ Mail client
-#     if email:
-#         msg = Message(f"Confirmation de votre intervention {intervention_numero}", recipients=[email])
-#         msg.body = f"""
-# Bonjour {contact_nom},
-
-# Nous avons bien reçu votre demande d'intervention.
-
-# Numéro d'intervention : {intervention_numero}
-
-# Notre équipe vous contactera sous peu pour finaliser les détails.
-# Merci pour votre confiance,
-# Support Mobibenz
-# """
-#         try:
-#             mail.send(msg)
-#         except Exception as e:
-#             print("⚠️ Erreur envoi mail:", e)
-
-#     return redirect(url_for('merci', intervention=intervention_numero))
+    return redirect(url_for('merci', intervention=intervention_numero))
 
 # ✅ Page de remerciement
 @app.route('/merci')
