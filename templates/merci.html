@@ -88,12 +88,12 @@
   <p>Merci pour votre confiance.</p>
   <p>Numéro de demande :</p>
   <p class="numero">{{ request.args.get('intervention') }}</p>
-  {% if intervention %}
+  {% if email %}
   <p style="margin-top: 10px; color: #d8ce0a;">
     <i class="fa-solid fa-envelope"></i>
     Un e-mail de confirmation contenant votre numéro de demande vous a été envoyé.
   </p>
-{% endif %}
+  {% endif %}
   <p>Veuillez conserver ce numéro pour tout suivi.</p>
   <a href="{{ url_for('support_form') }}" class="btn-retour">
     <i class="fa-solid fa-arrow-left"></i>

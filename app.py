@@ -208,13 +208,14 @@ def submit():
     else:
         print("Email ignore (vide ou invalide).")
 
-    return redirect(url_for('merci', intervention=intervention_numero))
+    return redirect(url_for('merci', intervention=intervention_numero, email=email))
 
 # ✅ Page de remerciement
 @app.route('/merci')
 def merci():
     intervention = request.args.get('intervention')
-    return render_template('merci.html', intervention=intervention)
+    email = request.args.get('email')
+    return render_template('merci.html', intervention=intervention, email=email)
 
 # 🔐 Login admin
 @app.route('/admin/login', methods=['GET', 'POST'])
