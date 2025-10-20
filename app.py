@@ -126,6 +126,13 @@ def submit():
                 subject=f"Confirmation de votre demande de support {intervention_numero}",
                 recipients=[email]
             )
+            # 🖼️ Version HTML
+            msg.html = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+  </body>
+</html>
+"""
         except Exception as e:
             print(f"⚠️ Erreur envoi mail ({email}):", e)
     else:
