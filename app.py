@@ -84,16 +84,16 @@ def support_form():
 # 📥 Soumission formulaire
 @app.route('/submit', methods=['POST'])
 def submit():
-    entreprise = request.form['entreprise']
-    contact_nom = request.form['contact_nom']
-    telephone = request.form['telephone']
-    email = request.form['email']
-    titre = request.form['titre']
+    entreprise = request.form.get('entreprise', '').strip()
+    contact_nom = request.form.get('contact_nom', '').strip()
+    telephone = request.form.get('telephone', '').strip()
+    email = request.form.get('email', '').strip()   # ✅ .get() protège contre KeyError
+    titre = request.form.get('titre', '').strip()
     # 🗑️ description retirée ici
 
-    type_support = request.form['type_support']
-    detail_support = request.form['detail_support']
-    autre_detail = request.form.get('autre_detail', '')
+    type_support = request.form.get('type_support', '').strip()
+    detail_support = request.form.get('detail_support', '').strip()
+    autre_detail = request.form.get('autre_detail', '').strip()
 
     express = 1 if 'express' in request.form else 0
 
