@@ -119,26 +119,26 @@ def submit():
     inserted_id = c.lastrowid
     conn.close()
 
-    #🌐 Génération du PDF via PDFShift
-    pdf_bytes = None
-    try:
-        import requests
-        fiche_url = url_for('print_intervention', id=inserted_id, _external=True)
-        api_key = "sk_0fcf9fb73101a0a9669c55c21a93d6eba5731dec"  # 🛑 remplace par ta clé API PDFShift
+    # 🌐 Génération du PDF via PDFShift
+    # pdf_bytes = None
+    # try:
+    #     import requests
+    #     fiche_url = url_for('print_intervention', id=inserted_id, _external=True)
+    #     api_key = "sk_0fcf9fb73101a0a9669c55c21a93d6eba5731dec"  # 🛑 remplace par ta clé API PDFShift
 
-        response = requests.post(
-            "https://api.pdfshift.io/v3/convert",
-            auth=(api_key, ""),
-            json={"source": fiche_url}
-        )
+    #     response = requests.post(
+    #         "https://api.pdfshift.io/v3/convert",
+    #         auth=(api_key, ""),
+    #         json={"source": fiche_url}
+    #     )
 
-        if response.status_code == 200:
-            pdf_bytes = response.content
-            print("✅ PDF généré avec succès depuis /print")
-        else:
-            print("⚠️ Erreur génération PDF:", response.text)
-    except Exception as e:
-        print("⚠️ Exception génération PDF:", e)
+    #     if response.status_code == 200:
+    #         pdf_bytes = response.content
+    #         print("✅ PDF généré avec succès depuis /print")
+    #     else:
+    #         print("⚠️ Erreur génération PDF:", response.text)
+    # except Exception as e:
+    #     print("⚠️ Exception génération PDF:", e)
 
     # 📬 Envoi du courriel si email valide
     if email and EMAIL_REGEX.match(email):
@@ -194,12 +194,12 @@ def submit():
 </html>
 """
             # 📎 Pièce jointe si PDF généré
-            if pdf_bytes:
-                msg.attach(
-                    f"{intervention_numero}.pdf",
-                    "application/pdf",
-                    pdf_bytes
-                )
+            # if pdf_bytes:
+            #     msg.attach(
+            #         f"{intervention_numero}.pdf",
+            #         "application/pdf",
+            #         pdf_bytes
+            #     )
             
             mail.send(msg)
             print("Email envoyé")
