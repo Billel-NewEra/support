@@ -43,7 +43,7 @@ def init_db():
         entreprise TEXT,
         contact_nom TEXT,
         telephone TEXT,
-        email TEXT,
+        email TEXT NULL,
         titre TEXT,
         -- 🗑️ description supprimée
         type_support TEXT,
