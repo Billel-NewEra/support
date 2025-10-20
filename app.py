@@ -141,58 +141,58 @@ def submit():
     #     print("⚠️ Exception génération PDF:", e)
 
     # 📬 Envoi du courriel si email valide
-#     if email and EMAIL_REGEX.match(email):
-#         try:
-#             msg = Message(
-#                 subject=f"Confirmation de votre demande de support {intervention_numero}",
-#                 recipients=[email]
-#             )
-#             # 🖼️ Version HTML
-#             msg.html = f"""
-# <html>
-#   <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
-#     <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+    if email and EMAIL_REGEX.match(email):
+        try:
+            msg = Message(
+                subject=f"Confirmation de votre demande de support {intervention_numero}",
+                recipients=[email]
+            )
+            # 🖼️ Version HTML
+            msg.html = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
       
-#       <!-- Logo Mobibenz -->
-#       <div style="text-align:center; margin-bottom:20px;">
-#         <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
-#       </div>
+      <!-- Logo Mobibenz -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
+      </div>
 
-#       <!-- Titre -->
-#       <h2 style="color:#1c3faa; text-align:center;">Confirmation de votre demande de support</h2>
+      <!-- Titre -->
+      <h2 style="color:#1c3faa; text-align:center;">Confirmation de votre demande de support</h2>
       
-#       <!-- Message principal -->
-#       <p>Bonjour <strong>{contact_nom}</strong>,</p>
-#       <p>Nous avons bien reçu votre demande de support.</p>
+      <!-- Message principal -->
+      <p>Bonjour <strong>{contact_nom}</strong>,</p>
+      <p>Nous avons bien reçu votre demande de support.</p>
 
-#       <p style="line-height:1.6;">
-#         <strong>Numéro de demande :</strong> {intervention_numero}<br>
-#         <strong>Date de soumission :</strong> {date}
-#       </p>
+      <p style="line-height:1.6;">
+        <strong>Numéro de demande :</strong> {intervention_numero}<br>
+        <strong>Date de soumission :</strong> {date}
+      </p>
 
-#       <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
+      <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
 
-#       <!-- <p>📎 Vous trouverez également la fiche d'intervention en pièce jointe à ce courriel.</p> -->
+      <!-- <p>📎 Vous trouverez également la fiche d'intervention en pièce jointe à ce courriel.</p> -->
 
-#       <!-- Bloc frais -->
-#         <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
-#             <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
-#             <ul style="margin:0; padding-left:20px;">
-#               <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
-#               <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
-#             </ul>
-#         </div>
+      <!-- Bloc frais -->
+        <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
+            <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
+            <ul style="margin:0; padding-left:20px;">
+              <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
+              <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
+            </ul>
+        </div>
 
-#       <!-- Footer -->
-#       <p style="margin-top:25px; text-align:center;">
-#         Merci pour votre confiance,<br>
-#         <strong>Mobibenz Support</strong><br>
-#         <a href="https://mobibenz.com/support" style="color:#1c3faa; text-decoration:none;">mobibenz.com</a>
-#       </p>
-#     </div>
-#   </body>
-# </html>
-# """
+      <!-- Footer -->
+      <p style="margin-top:25px; text-align:center;">
+        Merci pour votre confiance,<br>
+        <strong>Mobibenz Support</strong><br>
+        <a href="https://mobibenz.com/support" style="color:#1c3faa; text-decoration:none;">mobibenz.com</a>
+      </p>
+    </div>
+  </body>
+</html>
+"""
             # 📎 Pièce jointe si PDF généré
             # if pdf_bytes:
             #     msg.attach(
@@ -201,12 +201,12 @@ def submit():
             #         pdf_bytes
             #     )
             
-    #         mail.send(msg)
-    #         print("Email envoyé")
-    #     except Exception as e:
-    #         print(f"Erreur lors de l'envoi de l'email:", e)
-    # else:
-    #     print("Email ignoré (vide ou invalide).")
+            mail.send(msg)
+            print("Email envoyé")
+        except Exception as e:
+            print(f"Erreur lors de l'envoi de l'email:", e)
+    else:
+        print("Email ignoré (vide ou invalide).")
 
     return redirect(url_for('merci', intervention=intervention_numero))
 
