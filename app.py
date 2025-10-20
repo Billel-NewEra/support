@@ -173,11 +173,11 @@ def submit():
 </html>
 """
             mail.send(msg)
-            #print(f"✅ Courriel envoyé à {email}")
+            print("Email envoyé")
         except Exception as e:
-            print(f"⚠️ Erreur envoi mail ({email}):", e)
+            print(f"Erreur lors de l'envoi de l'email:", e)
     else:
-        print("📭 Email ignoré (vide ou invalide).")
+        print("Email ignoré (vide ou invalide).")
 
     return redirect(url_for('merci', intervention=intervention_numero))
 
