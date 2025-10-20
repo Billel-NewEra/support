@@ -99,7 +99,7 @@ def submit():
 
     # Si email est vide → on le remplace par None (pour insertion NULL en base)
     if not email:
-        email = "None@gmail.com"
+        email = None
 
     intervention_numero = generate_intervention_number()
     date = now_local().strftime("%Y-%m-%d %H:%M:%S")
@@ -119,26 +119,26 @@ def submit():
     conn.commit()
     conn.close()
 
-    # ✉️ Mail client
-    if email:
-        msg = Message(f"Confirmation de votre intervention {intervention_numero}", recipients=[email])
-        msg.body = f"""
-Bonjour {contact_nom},
+#     # ✉️ Mail client
+#     if email:
+#         msg = Message(f"Confirmation de votre intervention {intervention_numero}", recipients=[email])
+#         msg.body = f"""
+# Bonjour {contact_nom},
 
-Nous avons bien reçu votre demande d'intervention.
+# Nous avons bien reçu votre demande d'intervention.
 
-Numéro d'intervention : {intervention_numero}
+# Numéro d'intervention : {intervention_numero}
 
-Notre équipe vous contactera sous peu pour finaliser les détails.
-Merci pour votre confiance,
-Support Mobibenz
-"""
-        try:
-            mail.send(msg)
-        except Exception as e:
-            print("⚠️ Erreur envoi mail:", e)
+# Notre équipe vous contactera sous peu pour finaliser les détails.
+# Merci pour votre confiance,
+# Support Mobibenz
+# """
+#         try:
+#             mail.send(msg)
+#         except Exception as e:
+#             print("⚠️ Erreur envoi mail:", e)
 
-    return redirect(url_for('merci', intervention=intervention_numero))
+#     return redirect(url_for('merci', intervention=intervention_numero))
 
 # ✅ Page de remerciement
 @app.route('/merci')
