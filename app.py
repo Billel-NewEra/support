@@ -143,6 +143,8 @@ def submit():
     # 📬 Envoi du courriel si email valide
     if email and EMAIL_REGEX.match(email):
         try:
+            # 🆔 Construction du lien vers la fiche
+            lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
             msg = Message(
                 subject=f"Confirmation de votre demande de support {intervention_numero}",
                 recipients=[email]
@@ -173,6 +175,15 @@ def submit():
       <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
 
       <!-- <p>📎 Vous trouverez également la fiche d'intervention en pièce jointe à ce courriel.</p> -->
+
+      <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
+      <p style="margin-top:20px; text-align:center;">
+        📎 <strong>Besoin d'un justificatif ?</strong><br>
+        <a href="{lien_impression}" target="_blank" 
+           style="color:#1c3faa; text-decoration:none; font-weight:bold;">
+          Cliquez ici pour imprimer votre fiche d'intervention
+        </a>
+      </p>
 
       <!-- Bloc frais -->
         <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
@@ -208,14 +219,15 @@ def submit():
     else:
         print("Email ignore (vide ou invalide).")
 
-    return redirect(url_for('merci', intervention=intervention_numero, email=email))
+    return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
 # ✅ Page de remerciement
 @app.route('/merci')
 def merci():
     intervention = request.args.get('intervention')
+    id_demande = request.args.get('id')
     email = request.args.get('email')
-    return render_template('merci.html', intervention=intervention, email=email)
+    return render_template('merci.html', intervention=intervention, id=id_demande, email=email)
 
 # 🔐 Login admin
 @app.route('/admin/login', methods=['GET', 'POST'])

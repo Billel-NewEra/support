@@ -3,13 +3,8 @@
 
 {% block head_extra %}
 <style>
-  html, body {
-    height: 100%;
-  }
-
-  html {
-    overflow-y: scroll;
-  }
+  html, body { height: 100%; }
+  html { overflow-y: scroll; }
 
   .merci-box {
     background: rgba(255, 255, 255, 0.1);
@@ -48,7 +43,7 @@
     margin-bottom: 10px;
   }
 
-  .btn-retour {
+  .btn-retour, .btn-print {
     background: linear-gradient(135deg, var(--vert), #0ea645);
     border: none;
     font-size: 1rem;
@@ -66,19 +61,31 @@
     text-decoration: none;
   }
 
-  .btn-retour:hover {
+  .btn-retour {
+  margin-top: 25px; /* 👈 légèrement plus bas qu'avant */
+}
+
+  .btn-retour:hover, .btn-print:hover {
     background: linear-gradient(135deg, #0ea645, var(--vert));
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(12, 139, 62, 0.5);
   }
 
-  .btn-retour i {
+  .btn-retour i, .btn-print i {
     font-size: 1rem;
   }
 
-  footer {
-    margin-top: auto;         /* pousse le footer en bas */
+  .btn-print {
+    background: linear-gradient(135deg, #1c3faa, #007bff);
+    box-shadow: 0 4px 15px rgba(28, 63, 170, 0.4);
   }
+
+  .btn-print:hover {
+    background: linear-gradient(135deg, #007bff, #1c3faa);
+    box-shadow: 0 6px 20px rgba(28, 63, 170, 0.5);
+  }
+
+  footer { margin-top: auto; }
 </style>
 {% endblock %}
 
@@ -86,15 +93,26 @@
 <div class="merci-box">
   <h3>✅ Votre demande de support a été envoyée avec succès</h3>
   <p>Merci pour votre confiance.</p>
+
   <p>Numéro de demande :</p>
   <p class="numero">{{ request.args.get('intervention') }}</p>
+
   {% if email %}
   <p style="margin-top: 10px; color: #d8ce0a;">
     <i class="fa-solid fa-envelope"></i>
     Un e-mail de confirmation contenant votre numéro de demande vous a été envoyé.
   </p>
   {% endif %}
+
   <p>Veuillez conserver ce numéro pour tout suivi.</p>
+
+  {% if id %}
+  <a href="{{ url_for('print_intervention', id=id) }}" class="btn-print" target="_blank">
+    <i class="fa-solid fa-print"></i>
+    Imprimer la fiche d'intervention
+  </a>
+  {% endif %}
+
   <a href="{{ url_for('support_form') }}" class="btn-retour">
     <i class="fa-solid fa-arrow-left"></i>
     Retour
