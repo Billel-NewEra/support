@@ -89,7 +89,7 @@ def submit():
     entreprise = request.form.get('entreprise', '').strip()
     contact_nom = request.form.get('contact_nom', '').strip()
     telephone = request.form.get('telephone', '').strip()
-    email = request.form.get('email', '').strip()
+    email = (request.form.get('email') or '').strip()
     titre = request.form.get('titre', '').strip()
     # 🗑️ description retirée ici
 
