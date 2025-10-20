@@ -20,7 +20,7 @@ def index():
     message = ''
     email = ''
     if request.method == 'POST':
-        email = (request.form.get('email') or '').strip()
+        email = request.form.get('email', '').strip()
         if email and EMAIL_REGEX.match(email):
             try:
                 msg = Message(
