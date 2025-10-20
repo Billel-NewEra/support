@@ -206,7 +206,7 @@ def submit():
         except Exception as e:
             print(f"Erreur lors de l'envoi de l'email:", e)
     else:
-        print("Email ignoré (vide ou invalide).")
+        print("Email ignore (vide ou invalide).")
 
     return redirect(url_for('merci', intervention=intervention_numero))
 
