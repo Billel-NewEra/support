@@ -172,6 +172,8 @@ def submit():
   </body>
 </html>
 """
+            mail.send(msg)
+            print(f"✅ Courriel envoyé à {email}")
         except Exception as e:
             print(f"⚠️ Erreur envoi mail ({email}):", e)
     else:
