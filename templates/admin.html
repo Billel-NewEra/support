@@ -490,7 +490,7 @@ function applyFilters() {
   filteredIdx = [];
   pairs.forEach((p, i) => {
     const columnsText = p.main.innerText.toLowerCase();
-    const dateCell = p.main.children[5]?.innerText.trim();
+    const dateCell = p.main.children[4]?.innerText.trim();
     const matchSearch = columnsText.includes(searchValue);
     const matchDate = dateInRange(dateCell, dateFilter);
     if (matchSearch && matchDate) filteredIdx.push(i);
