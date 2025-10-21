@@ -431,7 +431,7 @@ def resend_confirmation(id):
             return "Email invalide", 400
 
     except Exception as e:
-        print("❌ Erreur d'envoie confirmation")
+        
         return str(e), 500
 
 
