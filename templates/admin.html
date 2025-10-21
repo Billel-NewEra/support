@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
   <style>
     :root {
       --bleu-fonce: #0a2760;
@@ -300,8 +303,8 @@
           <th>ID</th>
           <th>Numéro</th>
           <th>Entreprise</th>
-          <th>Type</th>
           <th>Date</th>
+          <th>Planifiée</th> <!-- 🆕 -->
           <th>Statut</th>
           <th></th>
         </tr>
@@ -313,8 +316,12 @@
           <td>{{ d[0] }}</td>
           <td>{{ d[1] }}</td>
           <td>{{ d[2] }}</td>
-          <td>{{ d[7] }}</td>
           <td>{{ d[11] }}</td>
+          <td>
+            {% if d[13] %}
+              {{ d[13][:10] }} à {{ d[13][11:] }}
+            {% endif %}
+          </td>
           <td>
             <span class="badge status-badge 
               {% if d[12] == 'En attente' %}bg-warning text-dark{% elif d[12] == 'En cours' %}bg-primary{% else %}bg-success{% endif %}"
@@ -344,6 +351,9 @@
                 {% if d[10] == 1 %}
                 <strong>Express: </strong> Oui<br>
                 {% endif %}
+                {% if d[14] %}
+                <strong>Confirmation Planif:</strong> <span id="planif-confirmation-{{ d[0] }}">{{ d[14] }}</span><br>
+                {% endif %}
               </div>
             </div>
           </td>
@@ -364,10 +374,12 @@
   </div>
 
   <div id="action-dropdown" class="action-dropdown d-none">
-    <div class="action-option" onclick="redirectTo('edit')">✏️ Modifier</div>
-    <div class="action-option" onclick="redirectTo('print')">🖨️ Imprimer</div>
-    <div class="action-option text-danger" onclick="redirectTo('delete')">🗑️ Supprimer</div>
-    <div class="action-option" onclick="redirectTo('resend')">✉️ Renvoyer confirmation</div>
+    <div class="action-option" onclick="redirectTo('edit')">Modifier</div>
+    <div class="action-option" onclick="redirectTo('resend')">Renvoyer confirmation</div>
+    <div class="action-option" onclick="redirectTo('planif')">Planifier intervention</div>
+    <div class="action-option" onclick="redirectTo('planifMail')">Confirmer planification</div>
+    <div class="action-option" onclick="redirectTo('print')">Imprimer</div>
+    <div class="action-option text-danger" onclick="redirectTo('delete')">Supprimer</div>
   </div>
 
   <footer>
@@ -675,49 +687,205 @@ function redirectTo(action) {
     }
   }
   if (action === 'resend') {
-    // on fermera le menu immédiatement pour un meilleur ressenti
+    // Fermer le menu visuel immédiatement
+    document.getElementById('action-dropdown').classList.add('d-none');
+
+    // 1) Popup de confirmation Oui / Annuler
+    Swal.fire({
+      text: 'Voulez-vous vraiment envoyer une nouvelle confirmation au client ?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, envoyer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true,
+      focusCancel: true,              // met le focus sur "Annuler" par sécurité
+      customClass: { popup: 'custom-small-popup' }
+    }).then((result) => {
+    if (!result.isConfirmed) {
+      // l’utilisateur a annulé → on ne fait rien
+      return;
+    }
+
+    // 2) Popup “chargement” pendant l’envoi
+    Swal.fire({
+      title: 'Envoi en cours...',
+      text: 'Veuillez patienter quelques secondes',
+      icon: 'info',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+      customClass: { popup: 'custom-small-popup' }
+    });
+
+    // 3) Appel backend pour renvoyer l’email
+    fetch(`${base}/resend_confirmation/${currentActionId}`, { method: 'POST' })
+      .then(async (r) => {
+        Swal.close(); // ferme le loader
+        const payload = await r.text().catch(() => '');
+
+        if (r.ok) {
+          // 4) Succès
+          Swal.fire({
+            icon: 'success',
+            title: 'Confirmation envoyée',
+            text: "L'e-mail a été renvoyé avec succès.",
+            timer: 2500,
+            showConfirmButton: false,
+            customClass: { popup: 'custom-small-popup' }
+          });
+        } else {
+          // 4) Erreur HTTP
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: "Échec de l'envoi de la confirmation." + (payload ? `\n${payload}` : ''),
+            customClass: { popup: 'custom-small-popup' }
+          });
+        }
+      })
+      .catch(() => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur réseau',
+          text: "Impossible de contacter le serveur.",
+          customClass: { popup: 'custom-small-popup' }
+        });
+      });
+    });
+  }
+
+  if (action === 'planif') {
     document.getElementById('action-dropdown').classList.add('d-none');
 
     Swal.fire({
-    title: 'Envoi en cours...',
-    text: 'Veuillez patienter quelques secondes',
-    icon: 'info',
-    showConfirmButton: false,
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
-
-    // Appelera un endpoint que nous créerons ensuite côté Flask
-    fetch(`${base}/resend_confirmation/${currentActionId}`, { method: 'POST' })
-    .then(async (r) => {
-      Swal.close();
-      if (r.ok) {
-        Swal.fire({
-          title: 'Confirmation envoyée ✅',
-          text: 'Le client a bien reçu la confirmation.',
-          icon: 'success',
-          confirmButtonText: 'OK'
+      title: 'Planifier une intervention',
+      html: `
+        <input id="planif-picker" class="swal2-input" placeholder="Choisir la date et l'heure">
+      `,
+      focusConfirm: false,
+      confirmButtonText: 'Enregistrer',
+      showCancelButton: true,
+      cancelButtonText: 'Annuler',
+      customClass: { popup: 'custom-small-popup' },
+      didOpen: () => {
+        flatpickr("#planif-picker", {
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: "Y-m-d H:i",
+          locale: "fr",
+          minDate: "today"
         });
-      } else {
-        const t = await r.text().catch(() => '');
-        Swal.fire({
-          title: 'Erreur ❌',
-          text: "Échec de l'envoi de la confirmation." + (t ? `\n${t}` : ''),
-          icon: 'error',
-          confirmButtonText: 'OK'
+      },
+      preConfirm: () => {
+        const value = document.getElementById('planif-picker').value;
+        if (!value) {
+          Swal.showValidationMessage('Veuillez choisir une date et une heure');
+          return false;
+        }
+        return value;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const planifValue = result.value;
+        fetch(`${base}/update_planif/${currentActionId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date_planif: planifValue })
+        })
+        .then(r => {
+          if (r.ok) {
+            Swal.fire({
+              icon: 'success',
+              title: '✅ Intervention planifiée',
+              text: `Date : ${planifValue}`,
+              timer: 2500,
+              showConfirmButton: false,
+              customClass: { popup: 'custom-small-popup' }
+            }).then(() => {
+              window.location.reload();
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: '❌ Erreur',
+              text: 'Impossible de planifier cette intervention.'
+            });
+          }
         });
       }
-    })
-      .catch(() => {
-      Swal.close();
+    });
+  }
+  if (action === 'planifMail') {
+    document.getElementById('action-dropdown').classList.add('d-none');
+
+    Swal.fire({
+      text: 'Voulez-vous envoyer une confirmation de la planificaiton au client.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, envoyer',
+      cancelButtonText: 'Annuler',
+      reverseButtons: true,
+      customClass: { popup: 'custom-small-popup' }
+    }).then((result) => {
+    if (result.isConfirmed) {
       Swal.fire({
-        title: 'Erreur réseau ❌',
-        text: "Impossible d'envoyer la confirmation. Vérifiez votre connexion.",
-        icon: 'error',
-        confirmButtonText: 'OK'
+        title: 'Envoi en cours...',
+        text: 'Veuillez patienter quelques secondes',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        customClass: { popup: 'custom-small-popup' }
       });
+
+      fetch(`${base}/send_planif_confirmation/${currentActionId}`, {
+        method: 'POST'
+      })
+      .then(r => r.json())
+  .then(data => {
+    Swal.close();
+    if (data.status === 'ok') {
+      // ✅ Utiliser la date renvoyée par le backend
+      const timestamp = data.timestamp;
+      let span = document.getElementById(`planif-confirmation-${currentActionId}`);
+
+      if (!span) {
+        const details = document.querySelector(`#details-${currentActionId} .details-inner`);
+        if (details) {
+          const newEl = document.createElement('div');
+          newEl.innerHTML = `<strong>Confirmation Planif:</strong> <span id="planif-confirmation-${currentActionId}">${timestamp}</span><br>`;
+          details.appendChild(newEl);
+          span = document.getElementById(`planif-confirmation-${currentActionId}`);
+        }
+      } else {
+        span.textContent = timestamp;
+      }
+          Swal.fire({
+            icon: 'success',
+            title: '✅ Confirmation envoyée',
+            text: "L'e-mail de planification a été envoyé avec succès.",
+            timer: 2500,
+            showConfirmButton: false,
+            customClass: { popup: 'custom-small-popup' }
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: '❌ Erreur',
+            text: "Échec de l'envoi de l'e-mail de planification."
+          });
+        }
+      })
+      .catch(() => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: '❌ Erreur réseau',
+          text: "Impossible de contacter le serveur."
+        });
+      });
+     }
     });
   }
 }

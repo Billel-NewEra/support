@@ -100,8 +100,6 @@ def submit():
     autre_detail = request.form.get('autre_detail', '').strip()
 
     express = 1 if 'express' in request.form else 0
-    date_planif = None
-    planif_confirmation_date = None
 
     intervention_numero = generate_intervention_number()
     date = now_local().strftime("%Y-%m-%d %H:%M:%S")
@@ -113,11 +111,11 @@ def submit():
         INSERT INTO demandes (
             intervention_numero, entreprise, contact_nom, telephone, email,
             titre, type_support, detail_support, autre_detail,
-            express, date, statut, date_planif, planif_confirmation_date
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            express, date, statut
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (intervention_numero, entreprise, contact_nom, telephone, email,
           titre, type_support, detail_support, autre_detail,
-          express, date, statut, date_planif, planif_confirmation_date))  # 🗑️ description retirée ici
+          express, date, statut))  # 🗑️ description retirée ici
     conn.commit()
     # 🆔 Récupération de l'ID inséré
     inserted_id = c.lastrowid
@@ -538,17 +536,16 @@ def send_planif_confirmation(id):
 </html>
         """
         mail.send(msg)
-        timestamp = datetime.now(TZ).strftime("%Y-%m-%d %H:%M:%S")
         # 🕒 Enregistrer la date et l'heure d'envoi de la confirmation de planification
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        c.execute(
-            "UPDATE demandes SET planif_confirmation_date = ? WHERE id = ?",
-            (datetime.now(TZ).strftime("%Y-%m-%d %H:%M:%S"), id)
-        )
-        conn.commit()
-        conn.close()
-        return jsonify({"status": "ok", "timestamp": timestamp}), 200
+        # conn = sqlite3.connect(DB_PATH)
+        # c = conn.cursor()
+        # c.execute(
+        #     "UPDATE demandes SET planif_confirmation_date = ? WHERE id = ?",
+        #     (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), id)
+        # )
+        # conn.commit()
+        # conn.close()
+        return jsonify({"status": "ok"}), 200
 
     except Exception as e:
         print("❌ Erreur lors de l'envoi de l'e-mail planif:", e)
