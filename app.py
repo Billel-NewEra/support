@@ -7,6 +7,7 @@ import config
 import os
 import re
 from zoneinfo import ZoneInfo
+from flask import jsonify
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "demandes.db")
@@ -47,7 +48,6 @@ def init_db():
         telephone TEXT,
         email TEXT,
         titre TEXT,
-        -- 🗑️ description supprimée
         type_support TEXT,
         detail_support TEXT,
         autre_detail TEXT,
@@ -339,6 +339,101 @@ def edit_demande(id):
     conn.close()
 
     return render_template('edit.html', d=demande)
+
+
+@app.route('/resend_confirmation/<int:id>', methods=['POST'])
+def resend_confirmation(id):
+    try:
+        # 📌 Récupération des infos de la demande
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("""
+            SELECT intervention_numero, entreprise, contact_nom, telephone, email,
+                   titre, type_support, detail_support, autre_detail, express, date
+            FROM demandes
+            WHERE id = ?
+        """, (id,))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            return "Demande introuvable", 404
+
+        (intervention_numero, entreprise, contact_nom, telephone, email,
+         titre, type_support, detail_support, autre_detail, express, date) = row
+
+        # 🧾 Génération du lien d’impression (comme dans /submit)
+        lien_impression = url_for('print_intervention', id=id, _external=True)
+
+        # 📬 Envoi de l’e-mail si email valide
+        if email and EMAIL_REGEX.match(email):
+            msg = Message(
+                subject=f"Confirmation de votre demande de support {intervention_numero}",
+                recipients=[email]
+            )
+            msg.html = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+      
+      <!-- Logo Mobibenz -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
+      </div>
+
+      <!-- Titre -->
+      <h2 style="color:#1c3faa; text-align:center;">Confirmation de votre demande de support</h2>
+      
+      <!-- Message principal -->
+      <p>Bonjour <strong>{contact_nom}</strong>,</p>
+      <p>Nous vous confirmons une nouvelle fois la réception de votre demande de support.</p>
+
+      <p style="line-height:1.6;">
+        <strong>Numéro de demande :</strong> {intervention_numero}<br>
+        <strong>Date de soumission :</strong> {date}
+      </p>
+
+      <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
+
+      <!-- ✨ Lien fiche d’intervention -->
+      <p style="margin-top:20px; text-align:center;">
+        📎 <strong>Besoin d'un justificatif ?</strong><br>
+        <a href="{lien_impression}" target="_blank" 
+           style="color:#1c3faa; text-decoration:none; font-weight:bold;">
+          Cliquez ici pour imprimer votre fiche d'intervention
+        </a>
+      </p>
+
+      <!-- Bloc frais -->
+      <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
+          <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
+          <ul style="margin:0; padding-left:20px;">
+            <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
+            <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
+          </ul>
+      </div>
+
+      <!-- Footer -->
+      <p style="margin-top:25px; text-align:center;">
+        Merci pour votre confiance,<br>
+        <strong>Mobibenz Support</strong><br>
+        <a href="https://mobibenz.com/support" style="color:#1c3faa; text-decoration:none;">mobibenz.com</a>
+      </p>
+    </div>
+  </body>
+</html>
+"""
+            mail.send(msg)
+            print(f"✅ Email de confirmation renvoyé pour la demande {id}")
+            return jsonify({"status": "ok"}), 200
+        else:
+            print(f"⚠️ Aucun e-mail valide pour la demande {id}")
+            return "Email invalide", 400
+
+    except Exception as e:
+        print(f"❌ Erreur envoi confirmation : {e}")
+        return str(e), 500
+
 
 # ✅ Appel immédiat au démarrage, que ce soit avec Flask, Gunicorn ou autre
 init_db()

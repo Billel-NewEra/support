@@ -1,5 +1,5 @@
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin@mo&bibenz"
+ADMIN_PASSWORD = "Mobi@2025"
 SECRET_KEY = "ma_cle_ultra_secrete_a_modifier"
 
 MAIL_SERVER = "mail.mobibenz.com"
