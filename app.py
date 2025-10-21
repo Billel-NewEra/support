@@ -424,14 +424,14 @@ def resend_confirmation(id):
 </html>
 """
             mail.send(msg)
-            print("✅ Email de confirmation renvoye")
+            print(f"Email de confirmation renvoye pour la demande {id}")
             return jsonify({"status": "ok"}), 200
         else:
-            print("⚠️ Aucun email valide")
+            print(f"Aucun e-mail valide pour la demande {id}")
             return "Email invalide", 400
 
     except Exception as e:
-        
+        print(f"Erreur envoi confirmation : {e}")
         return str(e), 500
 
 
