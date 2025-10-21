@@ -427,7 +427,7 @@ def resend_confirmation(id):
             #print(f"✅ Email de confirmation renvoye pour la demande {id}")
             #return jsonify({"status": "ok"}), 200
         else:
-            print(f"⚠️ Aucun e-mail valide pour la demande {id}")
+            #print(f"⚠️ Aucun e-mail valide pour la demande {id}")
             return "Email invalide", 400
 
     except Exception as e:
