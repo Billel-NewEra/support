@@ -395,7 +395,7 @@ def resend_confirmation(id):
 
       <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
 
-      <!-- ✨ Lien fiche d’intervention -->
+      <!-- ✨ Lien fiche d'intervention -->
       <p style="margin-top:20px; text-align:center;">
         📎 <strong>Besoin d'un justificatif ?</strong><br>
         <a href="{lien_impression}" target="_blank" 
@@ -424,7 +424,7 @@ def resend_confirmation(id):
 </html>
 """
             mail.send(msg)
-            print(f"✅ Email de confirmation renvoyé pour la demande {id}")
+            print(f"✅ Email de confirmation renvoye pour la demande {id}")
             return jsonify({"status": "ok"}), 200
         else:
             print(f"⚠️ Aucun e-mail valide pour la demande {id}")
