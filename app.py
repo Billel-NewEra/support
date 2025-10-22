@@ -161,7 +161,7 @@ def submit():
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -376,7 +376,7 @@ def resend_confirmation(id):
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -485,7 +485,7 @@ def send_planif_confirmation(id):
 
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -580,7 +580,7 @@ def resolve_and_notify(id):
 
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
