@@ -178,7 +178,9 @@ def submit():
 
       <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
 
-      <!-- <p>📎 Vous trouverez également la fiche d'intervention en pièce jointe à ce courriel.</p> -->
+      <p>
+        Merci de votre confiance.
+      </p>
 
       <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
       <p style="margin-top:20px; text-align:center;">
@@ -200,7 +202,6 @@ def submit():
 
       <!-- Footer -->
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-        Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
         📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
@@ -393,6 +394,10 @@ def resend_confirmation(id):
 
       <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
 
+      <p>
+        Merci de votre confiance.
+      </p>
+
       <!-- ✨ Lien fiche d'intervention -->
       <p style="margin-top:20px; text-align:center;">
         📎 <strong>Besoin d'un justificatif ?</strong><br>
@@ -413,7 +418,6 @@ def resend_confirmation(id):
 
       <!-- Footer -->
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-        Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
         📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
@@ -502,7 +506,12 @@ def send_planif_confirmation(id):
       </p>
 
       <p>
-        Un technicien interviendra à la date prévue pour effectuer l'intervention. Si vous souhaitez modifier ou reporter cette date, merci de nous en informer au moins <strong>24 heures à l’avance</strong>.
+        Un technicien interviendra à la date prévue afin d'effectuer l'intervention. 
+        Dans le cas où vous souhaiteriez modifier ou reporter cette date, nous vous prions de bien vouloir nous en informer <strong>au minimum 24 heures à l'avance</strong>.
+      </p>
+
+      <p>
+        Merci de votre confiance.
       </p>
 
       <p style="margin-top:20px; text-align:center;">
@@ -521,7 +530,6 @@ def send_planif_confirmation(id):
 
       <!-- Footer -->
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-        Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
         📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com</a>
@@ -605,7 +613,6 @@ def resolve_and_notify(id):
 
       <!-- Footer -->
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-      <br>
         <strong>Mobibenz Support</strong><br>
         📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com</a>
