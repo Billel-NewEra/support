@@ -202,7 +202,7 @@ def submit():
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
         Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
-        📞 Service client : 0555 555 555<br>
+        📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
       </p>
     </div>
@@ -422,7 +422,7 @@ def resend_confirmation(id):
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
         Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
-        📞 Service client : 0555 555 555<br>
+        📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
       </p>
     </div>
@@ -530,7 +530,7 @@ def send_planif_confirmation(id):
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
         Merci de votre confiance,<br>
         <strong>Mobibenz Support</strong><br>
-        📞 Service client : 0555 555 555<br>
+        📞 Support technique : 0557 75 56 60<br>
         🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com</a>
       </p>
     </div>
