@@ -264,6 +264,11 @@
     }
     .custom-pagination .page-item span { cursor: default; }
 
+    .btn-progress {
+      background-color: #bb89dd; 
+      color: #000000; 
+    }
+
   </style>
 </head>
 <body>
@@ -324,7 +329,7 @@
           </td>
           <td>
             <span class="badge status-badge 
-              {% if d[12] == 'En attente' %}bg-warning text-dark{% elif d[12] == 'En cours' %}bg-primary{% else %}bg-success{% endif %}"
+              {% if d[12] == 'En attente' %}bg-warning text-dark{% elif d[12] == 'En cours' %}btn-progress{% else %}bg-success{% endif %}"
               id="status-{{ d[0] }}" onclick="openStatusMenu(event, {{ d[0] }})">
               {{ d[12] }}
             </span>
@@ -369,7 +374,7 @@
 
   <div id="status-dropdown" class="status-dropdown d-none">
     <div class="status-option" data-value="En attente">🟡 En attente</div>
-    <div class="status-option" data-value="En cours">🔵 En cours</div>
+    <div class="status-option" data-value="En cours">🟣 En cours</div>
     <div class="status-option" data-value="Résolue">🟢 Résolue</div>
   </div>
 
@@ -1019,7 +1024,7 @@ document.addEventListener('click', () => {
 
 function getStatusClass(value) {
   if (value === 'En attente') return 'bg-warning text-dark';
-  if (value === 'En cours') return 'bg-primary';
+  if (value === 'En cours') return 'btn-progress';
   if (value === 'Résolue') return 'bg-success';
   return 'bg-secondary';
 }
