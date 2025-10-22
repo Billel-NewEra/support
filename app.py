@@ -161,7 +161,7 @@ def submit():
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -383,7 +383,7 @@ def resend_confirmation(id):
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -492,7 +492,7 @@ def send_planif_confirmation(id):
 
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:180px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
