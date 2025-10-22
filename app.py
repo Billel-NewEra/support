@@ -498,7 +498,7 @@ def send_planif_confirmation(id):
       <!-- Message principal -->
       <p>Bonjour <strong>{contact_nom}</strong>,</p>
 
-      <p>Nous vous remercions pour votre confiance. Votre demande de support a bien été planifiée par notre équipe technique.</p>
+      <p>Votre demande de support a bien été planifiée par notre équipe technique.</p>
 
       <p style="line-height:1.6;">
         <strong>Numéro de demande :</strong> {intervention_numero}<br>
