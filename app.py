@@ -608,7 +608,7 @@ def resolve_and_notify(id):
       </p>
 
       <p>
-        Nous vous remercions de votre confiance et restons à votre disposition pour toute assistance complémentaire.
+        Merci de votre confiance.
       </p>
 
       <!-- Footer -->
