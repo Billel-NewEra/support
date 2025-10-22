@@ -265,7 +265,8 @@ def admin():
 @app.route('/update_statut/<int:id>', methods=['POST'])
 @login_required
 def update_statut(id):
-    new_statut = request.form['new_statut']
+    data = request.get_json()           # 👈 lit le body JSON correctement
+    new_statut = data.get('new_statut')
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("UPDATE demandes SET statut = ? WHERE id = ?", (new_statut, id))
