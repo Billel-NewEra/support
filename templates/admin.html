@@ -788,26 +788,30 @@ function redirectTo(action) {
   }).then((result) => {
     if (result.isConfirmed) {
       fetch(`${base}/delete/${currentActionId}`, { method: 'POST' })
-        .then(() => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Supprimé ✅',
-            text: 'L’intervention a été supprimée avec succès.',
-            timer: 2000,
-            showConfirmButton: false,
-            customClass: { popup: 'custom-small-popup' }
-          }).then(() => {
-            window.location.reload();
-          });
-        })
-        .catch(() => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erreur ❌',
-            text: 'Impossible de supprimer cette intervention.',
-            customClass: { popup: 'custom-small-popup' }
-          });
-        });
+  .then(async r => {
+    if (!r.ok) {
+      const msg = await r.text();
+      throw new Error(msg || "Erreur inconnue");
+    }
+    Swal.fire({
+      icon: 'success',
+      title: 'Supprimé ✅',
+      text: 'L’intervention a été supprimée avec succès.',
+      timer: 2000,
+      showConfirmButton: false,
+      customClass: { popup: 'custom-small-popup' }
+    }).then(() => {
+      window.location.reload();
+    });
+  })
+  .catch(err => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Suppression refusée ❌',
+      text: err.message,
+      customClass: { popup: 'custom-small-popup' }
+    });
+  });
     }
   });
 }

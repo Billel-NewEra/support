@@ -161,7 +161,7 @@ def submit():
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -280,18 +280,10 @@ def update_statut(id):
 def delete_demande(id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT statut FROM demandes WHERE id = ?", (id,))
-    result = c.fetchone()
-
-    if result and result[0] == "En attente":
-        c.execute("DELETE FROM demandes WHERE id = ?", (id,))
-        conn.commit()
-        flash("✅ L'intervention a été supprimée avec succès.", "success")
-    else:
-        flash("❌ Suppression refusée - l'intervention n'est pas en attente.", "danger")
-
+    c.execute("DELETE FROM demandes WHERE id = ?", (id,))
+    conn.commit()
     conn.close()
-    return redirect(url_for('admin'))
+    return ('', 204)  # ✅ Pas de redirection, réponse vide et succès
 
 # 🖨️ Page imprimable
 @app.route('/print/<int:id>')
@@ -384,7 +376,7 @@ def resend_confirmation(id):
       
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -493,7 +485,7 @@ def send_planif_confirmation(id):
 
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
@@ -588,7 +580,7 @@ def resolve_and_notify(id):
 
       <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
+        <img src="https://mobibenz.com/support/static/img/logo_200x200.png" alt="Mobibenz" style="max-width:100px;">
       </div>
 
       <!-- Titre -->
