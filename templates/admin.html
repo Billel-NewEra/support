@@ -650,14 +650,78 @@ document.querySelectorAll('.status-option').forEach(opt => {
   opt.addEventListener('click', () => {
     const value = opt.getAttribute('data-value');
     const id = currentStatusTarget.id.split('-')[1];
-    currentStatusTarget.textContent = value;
-    currentStatusTarget.className = `badge status-badge ${getStatusClass(value)}`;
+
     document.getElementById('status-dropdown').classList.add('d-none');
-    fetch(`/update_statut/${id}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ new_statut: value })
-    });
+
+    if (value === 'Résolue') {
+  Swal.fire({
+    title: 'Marquer comme résolue',
+    text: "Voulez-vous informer le client de la résolution ?",
+    icon: 'question',
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: 'Oui et notifier 📩',
+    denyButtonText: 'Oui sans notifier',
+    cancelButtonText: 'Annuler',
+    reverseButtons: true,
+    customClass: { popup: 'custom-small-popup' }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 📨 Oui et notifier
+      fetch(`${base}/resolve_and_notify/${id}`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok') {
+            currentStatusTarget.textContent = value;
+            currentStatusTarget.className = `badge status-badge ${getStatusClass(value)}`;
+            Swal.fire({
+              icon: 'success',
+              title: 'Résolue',
+              text: 'Le client a été notifié.',
+              timer: 2500,
+              showConfirmButton: false
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: data.message || "Une erreur est survenue."
+            });
+          }
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur réseau',
+            text: "Impossible de contacter le serveur."
+          });
+        });
+    } 
+    else if (result.isDenied) {
+      // ✅ Oui sans notifier → simple changement de badge, aucune popup supplémentaire
+      fetch(`${base}/update_statut/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ new_statut: value })
+      }).then(() => {
+        currentStatusTarget.textContent = value;
+        currentStatusTarget.className = `badge status-badge ${getStatusClass(value)}`;
+      });
+    } 
+    // ❌ Annuler → rien
+  });
+    } else {
+      // 🟡 Statuts normaux
+      fetch(`${base}/update_statut/${id}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ new_statut: value })
+      })
+      .then(() => {
+        currentStatusTarget.textContent = value;
+        currentStatusTarget.className = `badge status-badge ${getStatusClass(value)}`;
+      });
+    }
   });
 });
 

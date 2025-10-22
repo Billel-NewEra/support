@@ -553,6 +553,81 @@ def send_planif_confirmation(id):
     except Exception as e:
         print("❌ Erreur lors de l'envoi de l'e-mail planif:", e)
         return str(e), 500
+    
+
+@app.route('/resolve_and_notify/<int:id>', methods=['POST'])
+def resolve_and_notify(id):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        # 🟢 1. Mettre à jour le statut en "Résolue"
+        c.execute("UPDATE demandes SET statut = ? WHERE id = ?", ("Résolue", id))
+        conn.commit()
+
+        # 📩 2. Récupérer les infos du client
+        c.execute("SELECT email, contact_nom, intervention_numero FROM demandes WHERE id = ?", (id,))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            return jsonify({"status": "error", "message": "Demande introuvable"}), 404
+
+        email, contact_nom, intervention_numero = row
+
+        # ✉️ 3. Envoyer le courriel si l’adresse est disponible
+        if email and EMAIL_REGEX.match(email):
+            msg = Message(
+                subject=f"Demande {intervention_numero} — Résolue",
+                recipients=[email]
+            )
+            msg.html = f"""
+            <html>
+  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+
+      <!-- Logo Mobibenz -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="https://mobibenz.com/support/static/img/logo.jpg" alt="Mobibenz" style="max-width:100px;">
+      </div>
+
+      <!-- Titre -->
+      <h2 style="color:#1c3faa; text-align:center;">Demande {intervention_numero} – Résolue</h2>
+
+      <!-- Message principal -->
+      <p>Bonjour <strong>{contact_nom}</strong>,</p>
+
+      <p>
+        Nous vous informons que votre demande de support <strong>{intervention_numero}</strong> a été 
+        <strong>résolue</strong> et <strong>clôturée</strong> par notre équipe.
+      </p>
+
+      <p>
+        Si vous avez besoin d'une assistance supplémentaire, nous vous invitons à soumettre une <strong>nouvelle demande</strong> via notre plateforme :
+        <a href="https://mobibenz.com/support" style="color:#1c3faa; text-decoration:none;">mobibenz.com/support</a>.
+      </p>
+
+      <p>
+        Nous vous remercions de votre confiance et restons à votre disposition pour toute assistance complémentaire.
+      </p>
+
+      <!-- Footer -->
+      <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
+      <br>
+        <strong>Mobibenz Support</strong><br>
+        📞 Support technique : 0557 75 56 60<br>
+        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com</a>
+      </p>
+    </div>
+  </body>
+</html>
+            """
+            mail.send(msg)
+
+        return jsonify({"status": "ok"})
+
+    except Exception as e:
+        print("❌ Erreur resolve_and_notify:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # ✅ Appel immédiat au démarrage, que ce soit avec Flask, Gunicorn ou autre
 init_db()
