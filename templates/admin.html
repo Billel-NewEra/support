@@ -636,11 +636,25 @@ function buildPagination() {
 let currentStatusTarget = null;
 let currentActionId = null;
 
+let statusMenuOpenFor = null; // 📝 fermeture status — mémorise pour quel ID le menu est ouvert
+let actionMenuOpenFor = null; // 📝 fermeture actions — mémorise l'ID sur lequel le menu ⋮ est ouvert
+
 function openStatusMenu(e, id) {
   e.stopPropagation();
-  currentStatusTarget = document.getElementById(`status-${id}`);
-  const rect = currentStatusTarget.getBoundingClientRect();
   const dropdown = document.getElementById('status-dropdown');
+  const target = document.getElementById(`status-${id}`);
+
+  // 📝 fermeture status — si le menu est déjà ouvert pour ce même ID → on le ferme
+  if (statusMenuOpenFor === id) {
+    dropdown.classList.add('d-none');
+    statusMenuOpenFor = null;
+    return;
+  }
+
+  // 📝 ouverture status — sinon, on ouvre le menu
+  currentStatusTarget = target;
+  statusMenuOpenFor = id;
+  const rect = target.getBoundingClientRect();
   dropdown.style.top = `${rect.bottom + window.scrollY}px`;
   dropdown.style.left = `${rect.left}px`;
   dropdown.classList.remove('d-none');
@@ -727,11 +741,21 @@ document.querySelectorAll('.status-option').forEach(opt => {
 
 function openActionMenu(e, id) {
   e.stopPropagation();
-  currentActionId = id;
-  const rect = e.currentTarget.getBoundingClientRect();
   const dropdown = document.getElementById('action-dropdown');
+  const rect = e.currentTarget.getBoundingClientRect();
   const spaceRight = window.innerWidth - rect.right;
   const menuWidth = dropdown.offsetWidth;
+
+  // 📝 fermeture actions — si on clique sur le même ID, on ferme le menu
+  if (actionMenuOpenFor === id) {
+    dropdown.classList.add('d-none');
+    actionMenuOpenFor = null;
+    return;
+  }
+
+  // 📝 ouverture actions
+  currentActionId = id;
+  actionMenuOpenFor = id;
   dropdown.style.top = `${rect.bottom + window.scrollY}px`;
   dropdown.style.left = (spaceRight < menuWidth)
     ? `${rect.right - menuWidth}px`
@@ -745,11 +769,43 @@ function redirectTo(action) {
   if (action === 'edit') window.location.href = `${base}/edit/${currentActionId}`;
   if (action === 'print') window.location.href = `${base}/print/${currentActionId}`;
   if (action === 'delete') {
-    if (confirm('Supprimer cette intervention ?')) {
+  document.getElementById('action-dropdown').classList.add('d-none');
+
+  Swal.fire({
+    text: "Supprimer cette demande ?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Oui, supprimer 🗑️',
+    cancelButtonText: 'Annuler',
+    reverseButtons: true,
+    focusCancel: true,
+    customClass: { popup: 'custom-small-popup' }
+  }).then((result) => {
+    if (result.isConfirmed) {
       fetch(`${base}/delete/${currentActionId}`, { method: 'POST' })
-        .then(() => window.location.reload());
+        .then(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Supprimé ✅',
+            text: 'L’intervention a été supprimée avec succès.',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: { popup: 'custom-small-popup' }
+          }).then(() => {
+            window.location.reload();
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur ❌',
+            text: 'Impossible de supprimer cette intervention.',
+            customClass: { popup: 'custom-small-popup' }
+          });
+        });
     }
-  }
+  });
+}
   if (action === 'resend') {
     // Fermer le menu visuel immédiatement
     document.getElementById('action-dropdown').classList.add('d-none');
@@ -957,6 +1013,8 @@ function redirectTo(action) {
 document.addEventListener('click', () => {
   document.getElementById('status-dropdown').classList.add('d-none');
   document.getElementById('action-dropdown').classList.add('d-none');
+  statusMenuOpenFor = null; // 📝 fermeture status — clic en dehors
+  actionMenuOpenFor = null; // 📝 fermeture actions
 });
 
 function getStatusClass(value) {
