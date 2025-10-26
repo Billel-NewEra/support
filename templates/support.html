@@ -242,6 +242,7 @@
             <option value="">-- Sélectionner --</option>
             <option value="Sur site">Support sur site</option>
             <option value="À distance">Support à distance</option>
+            <option value="Commande">Commande produits</option>
           </select>
         </div>
       </div>
@@ -330,7 +331,8 @@ const entreprisesExistantes = [
   "DEV PACK",
   "AGRICHEM",
   "EURL RIMANES",
-  "IMPRIMERIE OURAHMOUNE"
+  "IMPRIMERIE OURAHMOUNE",
+  "CUBE TRADING"
 ];
 
 const radioOui = document.getElementById('clientOui');
@@ -417,10 +419,12 @@ function hideError() { if (errorAlert) errorAlert.classList.add('d-none'); }
 
 const options = {
   "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
-  "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"]
+  "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"],
+  "Commande": ["Assistance logicielle"]
 };
 
 typeSelect.addEventListener('change', () => {
+  // Reset des champs
   detailSelect.innerHTML = '<option value="">-- Sélectionner --</option>';
   alertWrapper.classList.add('d-none');
   alertWrapper.classList.remove('show');
@@ -432,8 +436,27 @@ typeSelect.addEventListener('change', () => {
   autreInput.removeAttribute('required');
   hideError();
 
-  if (options[typeSelect.value]) {
-    options[typeSelect.value].forEach(opt => {
+  const selectedType = typeSelect.value;
+
+  // 👉 Cas spécial : Commande produits
+  if (selectedType === "Commande") {
+    // On cache le champ "Détail"
+    detailSelect.closest('.mb-3').classList.add('d-none');
+    detailSelect.removeAttribute('required');
+
+    // On affiche le champ "Détail supplémentaire" directement
+    autreContainer.classList.remove('d-none');
+    autreInput.setAttribute('required', 'required');
+    return;
+  } else {
+    // Si ce n'est pas Commande, on réaffiche le champ Détail
+    detailSelect.closest('.mb-3').classList.remove('d-none');
+    detailSelect.setAttribute('required', 'required');
+  }
+
+  // Options dynamiques selon le type
+  if (options[selectedType]) {
+    options[selectedType].forEach(opt => {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt;
@@ -441,11 +464,25 @@ typeSelect.addEventListener('change', () => {
     });
   }
 
-  if (typeSelect.value === "Sur site") {
+  // Message et option express pour "Sur site"
+  if (selectedType === "Sur site") {
     supportMessage.textContent = "⚠️ Veillez noter que des frais de déplacement de minimum 3000 DA s'ajoutent au coût de la prestation.";
     alertWrapper.classList.remove('d-none');
     setTimeout(() => alertWrapper.classList.add('show'), 20);
     expressContainer.classList.remove('d-none');
+  }
+});
+
+detailSelect.addEventListener('change', () => {
+  // Si Autre est choisi
+  if (detailSelect.value === "Autre") {
+    autreContainer.classList.remove('d-none');
+    autreInput.setAttribute('required', 'required');
+  } else {
+    autreContainer.classList.add('d-none');
+    autreInput.value = '';
+    autreInput.removeAttribute('required');
+    hideError();
   }
 });
 
