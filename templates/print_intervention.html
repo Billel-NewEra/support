@@ -48,7 +48,9 @@
         <div class="info-grid">
             <div class="info-item"><strong>Titre</strong>{{ d[6] }}</div>
             <div class="info-item"><strong>Type</strong>{{ d[7] }}</div>
+            {% if d[8] %}
             <div class="info-item"><strong>Détail</strong>{{ d[8] }}</div>
+            {% endif %}
             {% if d[9] %}
             <div class="info-item"><strong>Détail supplémentaire</strong>{{ d[9] }}</div>
             {% endif %}
