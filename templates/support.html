@@ -242,6 +242,7 @@
             <option value="">-- Sélectionner --</option>
             <option value="Sur site">Support sur site</option>
             <option value="À distance">Support à distance</option>
+            <option value="Reparation">Réparation</option>
             <option value="Commande">Commande de produits</option>
           </select>
         </div>
@@ -420,7 +421,8 @@ function hideError() { if (errorAlert) errorAlert.classList.add('d-none'); }
 const options = {
   "Sur site": ["Installation", "Maintenance", "Assistance technique", "Autre"],
   "À distance": ["Assistance logicielle", "Diagnostic", "Mise à jour", "Autre"],
-  "Commande": ["Assistance logicielle"]
+  "Reparation": [],
+  "Commande": []
 };
 
 typeSelect.addEventListener('change', () => {
@@ -439,7 +441,7 @@ typeSelect.addEventListener('change', () => {
   const selectedType = typeSelect.value;
 
   // 👉 Cas spécial : Commande produits
-  if (selectedType === "Commande") {
+  if (selectedType === "Commande" || selectedType === "Reparation") {
     // On cache le champ "Détail"
     detailSelect.closest('.mb-3').classList.add('d-none');
     detailSelect.removeAttribute('required');
