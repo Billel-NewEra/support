@@ -615,7 +615,7 @@ def resolve_and_notify(id):
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
         <strong>Mobibenz Support</strong><br>
         📞 Support technique : 0557 75 56 60<br>
-        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com</a>
+        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
       </p>
     </div>
   </body>
