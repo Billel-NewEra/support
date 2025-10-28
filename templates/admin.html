@@ -182,8 +182,6 @@
     .status-option:hover, .action-option:hover { background: #f0f0f0; }
     .action-option.text-danger { color: #d9534f; }
 
-    th:nth-child(7), td:nth-child(7) { text-align: center; width: 50px; }
-
     .menu-btn {
       background: none;
       border: none;
@@ -269,6 +267,72 @@
       color: #000000; 
     }
 
+    /* 💰 Style spécifique au paiement */
+.paiement-badge {
+      display: inline-block;
+      width: 80px;
+      text-align: center;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    .paiement-dropdown, .action-dropdown {
+      position: absolute;
+      background: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      padding: 5px 0;
+      z-index: 1000;
+      min-width: 130px;
+    }
+    .paiement-option, .action-option {
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .paiement-option:hover, .action-option:hover { background: #f0f0f0; }
+
+    .btn-paie-progress {
+      background-color: #8cdee9; 
+      color: #000000; 
+    }
+
+    .dot {
+  display: inline-block;
+  width: 14px;             /* taille du rond */
+  height: 14px;
+  border-radius: 50%;      /* rond parfait */
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.dot.red {
+  background-color: #dc3545; /* 🔴 Rouge Bootstrap */
+}
+
+.dot.green {
+  background-color: #198754; /* 🟢 Vert Bootstrap */
+}
+
+.dot.facture {
+  background-color: #8cdee9; /* 💠 Ton bleu personnalisé */
+}
+
+/* Statut */
+.dot.attente { background-color: #ffc107; }   /* 🟡 En attente */
+.dot.encours { background-color: #bb89dd; }   /* 🟣 En cours (ta couleur statut actuel) */
+.dot.resolue { background-color: #198754; }   /* 🟢 Résolue */
+
+.status-option, .paiement-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
   </style>
 </head>
 <body>
@@ -305,12 +369,12 @@
       <thead>
         <tr>
           <th></th>
-          <th>ID</th>
           <th>Numéro</th>
           <th>Entreprise</th>
           <th>Date</th>
           <th>Planifiée</th> <!-- 🆕 -->
           <th>Statut</th>
+          <th>Paiement</th>
           <th></th>
         </tr>
       </thead>
@@ -318,7 +382,6 @@
         {% for d in demandes %}
         <tr onclick="toggleDetails({{ d[0] }})">
           <td><i class="fa-solid fa-angle-right accordion-icon" id="icon-{{ d[0] }}"></i></td>
-          <td>{{ d[0] }}</td>
           <td>{{ d[1] }}</td>
           <td>{{ d[2] }}</td>
           <td>{{ d[11] }}</td>
@@ -332,6 +395,19 @@
               {% if d[12] == 'En attente' %}bg-warning text-dark{% elif d[12] == 'En cours' %}btn-progress{% else %}bg-success{% endif %}"
               id="status-{{ d[0] }}" onclick="openStatusMenu(event, {{ d[0] }})">
               {{ d[12] }}
+            </span>
+          </td>
+          <td>
+            <span class="badge paiement-badge
+              {% if d[15] == 'NP' %}bg-danger 
+              {% elif d[15] == 'F' %}btn-paie-progress
+              {% elif d[15] == 'P' %}bg-success
+              {% else %}bg-secondary{% endif %}"
+              id="paiement-{{ d[0] }}" onclick="openPaiementMenu(event, {{ d[0] }})">
+              {% if d[15] == 'NP' %}Non payé
+              {% elif d[15] == 'F' %}Facturé
+              {% elif d[15] == 'P' %}Payé
+              {% else %}Non payé{% endif %}
             </span>
           </td>
           <td>
@@ -373,10 +449,16 @@
   </div>
 
   <div id="status-dropdown" class="status-dropdown d-none">
-    <div class="status-option" data-value="En attente">🟡 En attente</div>
-    <div class="status-option" data-value="En cours">🟣 En cours</div>
-    <div class="status-option" data-value="Résolue">🟢 Résolue</div>
+    <div class="status-option" data-value="En attente"><span class="dot attente"></span>En attente</div>
+    <div class="status-option" data-value="En cours"><span class="dot encours"></span>En cours</div>
+    <div class="status-option" data-value="Résolue"><span class="dot resolue"></span>Résolue</div>
   </div>
+
+  <div id="paiement-dropdown" class="paiement-dropdown d-none">
+  <div class="paiement-option" data-value="NP"><span class="dot red"></span>Non payé</div>
+  <div class="paiement-option" data-value="F"><span class="dot facture"></span>Facturé</div>
+  <div class="paiement-option" data-value="P"><span class="dot green"></span>Payé</div>
+</div>
 
   <div id="action-dropdown" class="action-dropdown d-none">
     <div class="action-option" onclick="redirectTo('edit')">Modifier</div>
@@ -744,6 +826,60 @@ document.querySelectorAll('.status-option').forEach(opt => {
   });
 });
 
+// 📌 --- PAIEMENT MENU (identique au statut) ---
+let paiementMenuOpenFor = null;
+let currentPaiementTarget = null;
+
+function openPaiementMenu(e, id) {
+  e.stopPropagation();
+  const dropdown = document.getElementById('paiement-dropdown');
+  const target = document.getElementById(`paiement-${id}`);
+
+  // si le menu est déjà ouvert pour le même ID ➝ on ferme
+  if (paiementMenuOpenFor === id) {
+    dropdown.classList.add('d-none');
+    paiementMenuOpenFor = null;
+    return;
+  }
+
+  // sinon on ouvre
+  currentPaiementTarget = target;
+  paiementMenuOpenFor = id;
+  const rect = target.getBoundingClientRect();
+  dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+  dropdown.style.left = `${rect.left}px`;
+  dropdown.classList.remove('d-none');
+}
+
+document.querySelectorAll('.paiement-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const value = opt.getAttribute('data-value');
+    const id = currentPaiementTarget.id.split('-')[1];
+
+    document.getElementById('paiement-dropdown').classList.add('d-none');
+
+    fetch(`${base}/update_paiement/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ new_paiement: value })
+    })
+    .then(r => {
+      if (r.ok) {
+        currentPaiementTarget.textContent = 
+          value === 'NP' ? 'Non payé' : (value === 'F' ? 'Facturé' : 'Payé');
+        currentPaiementTarget.className = `badge paiement-badge ${getPaiementClass(value)}`;
+      }
+    });
+  });
+});
+
+function getPaiementClass(value) {
+  if (value === 'NP') return 'bg-danger';
+  if (value === 'F') return 'btn-paie-progress';
+  if (value === 'P') return 'bg-success';
+  return 'bg-secondary';
+}
+
 function openActionMenu(e, id) {
   e.stopPropagation();
   const dropdown = document.getElementById('action-dropdown');
@@ -1022,8 +1158,10 @@ function redirectTo(action) {
 document.addEventListener('click', () => {
   document.getElementById('status-dropdown').classList.add('d-none');
   document.getElementById('action-dropdown').classList.add('d-none');
+  document.getElementById('paiement-dropdown').classList.add('d-none'); // 🆕
   statusMenuOpenFor = null; // 📝 fermeture status — clic en dehors
   actionMenuOpenFor = null; // 📝 fermeture actions
+  paiementMenuOpenFor = null; // 🆕
 });
 
 function getStatusClass(value) {

@@ -55,7 +55,9 @@ def init_db():
         date TEXT,
         statut TEXT,
         date_planif TEXT,
-        planif_confirmation_date TEXT
+        planif_confirmation_date TEXT,
+        paiement TEXT DEFAULT 'NP'  -- 🆕 colonne ajoutée ici
+        
     )
     """)
     conn.commit()
@@ -256,7 +258,7 @@ def admin():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
-                 titre, type_support, detail_support, autre_detail, express, date, statut, date_planif, planif_confirmation_date
+                 titre, type_support, detail_support, autre_detail, express, date, statut, date_planif, planif_confirmation_date, paiement
                  FROM demandes ORDER BY date DESC""")  # 🗑️ description retirée ici
     rows = c.fetchall()
     conn.close()
@@ -292,7 +294,7 @@ def print_intervention(id):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""SELECT id, intervention_numero, entreprise, contact_nom, telephone, email,
-                 titre, type_support, detail_support, autre_detail, express, date, statut
+                 titre, type_support, detail_support, autre_detail, express, date, statut, paiement
                  FROM demandes WHERE id = ?""", (id,))  # 🗑️ description retirée ici
     demande = c.fetchone()
     conn.close()
@@ -628,6 +630,23 @@ def resolve_and_notify(id):
     except Exception as e:
         print("❌ Erreur resolve_and_notify:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
+    
+
+@app.route('/update_paiement/<int:id>', methods=['POST'])
+@login_required
+def update_paiement(id):
+    data = request.get_json()
+    new_paiement = data.get('new_paiement')  # 'NP', 'F' ou 'P'
+    if new_paiement not in ('NP', 'F', 'P'):
+        return jsonify({"status": "error", "message": "Valeur paiement invalide"}), 400
+
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("UPDATE demandes SET paiement = ? WHERE id = ?", (new_paiement, id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "ok"})
 
 # ✅ Appel immédiat au démarrage, que ce soit avec Flask, Gunicorn ou autre
 init_db()
