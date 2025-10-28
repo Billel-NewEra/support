@@ -404,10 +404,10 @@
               {% elif d[15] == 'P' %}bg-success
               {% else %}bg-secondary{% endif %}"
               id="paiement-{{ d[0] }}" onclick="openPaiementMenu(event, {{ d[0] }})">
-              {% if d[15] == 'NP' %}Non payé
-              {% elif d[15] == 'F' %}Facturé
-              {% elif d[15] == 'P' %}Payé
-              {% else %}Non payé{% endif %}
+              {% if d[15] == 'NP' %}Non payée
+              {% elif d[15] == 'F' %}Facturée
+              {% elif d[15] == 'P' %}Payée
+              {% else %}Non payée{% endif %}
             </span>
           </td>
           <td>
@@ -455,9 +455,9 @@
   </div>
 
   <div id="paiement-dropdown" class="paiement-dropdown d-none">
-  <div class="paiement-option" data-value="NP"><span class="dot red"></span>Non payé</div>
-  <div class="paiement-option" data-value="F"><span class="dot facture"></span>Facturé</div>
-  <div class="paiement-option" data-value="P"><span class="dot green"></span>Payé</div>
+  <div class="paiement-option" data-value="NP"><span class="dot red"></span>Non payée</div>
+  <div class="paiement-option" data-value="F"><span class="dot facture"></span>Facturée</div>
+  <div class="paiement-option" data-value="P"><span class="dot green"></span>Payée</div>
 </div>
 
   <div id="action-dropdown" class="action-dropdown d-none">
@@ -866,7 +866,7 @@ document.querySelectorAll('.paiement-option').forEach(opt => {
     .then(r => {
       if (r.ok) {
         currentPaiementTarget.textContent = 
-          value === 'NP' ? 'Non payé' : (value === 'F' ? 'Facturé' : 'Payé');
+          value === 'NP' ? 'Non payée' : (value === 'F' ? 'Facturée' : 'Payée');
         currentPaiementTarget.className = `badge paiement-badge ${getPaiementClass(value)}`;
       }
     });
