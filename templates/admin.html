@@ -75,7 +75,9 @@
       width: 100%;
     }
     #globalSearch {
-      min-width: 220px;
+      width: 220px;    /* ou auto si tu veux qu'il s'ajuste */
+      flex: 0 0 auto;
+      min-width: 200px;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #fff;
@@ -359,7 +361,10 @@
       <input type="date" class="form-control form-control-sm w-auto d-none" id="startDate" onchange="applyFilters()">
       <input type="date" class="form-control form-control-sm w-auto d-none" id="endDate" onchange="applyFilters()">
     </div>
-    <input type="text" class="form-control form-control-sm" id="globalSearch" placeholder="🔍 Rechercher...">
+    <!-- 🧭 Champ Rechercher en dessous -->
+    <div class="search-bar mt-2 w-100">
+      <input type="text" class="form-control form-control-sm" id="globalSearch" placeholder="🔍 Rechercher...">
+    </div>
   </div>
 
   <div class="table-box">
