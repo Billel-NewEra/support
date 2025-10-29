@@ -374,8 +374,8 @@
       <thead>
         <tr>
           <th></th>
-          <th>Numéro</th>
           <th>Entreprise</th>
+          <th>Numéro</th>
           <th>Date</th>
           <th>Planifiée</th> <!-- 🆕 -->
           <th>Statut</th>
@@ -387,8 +387,8 @@
         {% for d in demandes %}
         <tr onclick="toggleDetails({{ d[0] }})">
           <td><i class="fa-solid fa-angle-right accordion-icon" id="icon-{{ d[0] }}"></i></td>
-          <td>{{ d[1] }}</td>
           <td>{{ d[2] }}</td>
+          <td>{{ d[1] }}</td>
           <td>{{ d[11] }}</td>
           <td>
             {% if d[13] %}
