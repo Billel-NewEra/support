@@ -152,7 +152,7 @@ def submit():
             # 🆔 Construction du lien vers la fiche
             lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
             msg = Message(
-                subject=f"Confirmation de votre demande de support - {intervention_numero}",
+                subject=f"Réception de votre demande - {intervention_numero}",
                 recipients=[email]
             )
             # 🖼️ Version HTML
@@ -167,18 +167,18 @@ def submit():
       </div>
 
       <!-- Titre -->
-      <h2 style="color:#1c3faa; text-align:center;">Confirmation de votre demande de support</h2>
+      <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
       
       <!-- Message principal -->
       <p>Bonjour <strong>{contact_nom}</strong>,</p>
-      <p>Nous avons bien reçu votre demande de support.</p>
+      <p>Nous avons bien reçu votre demande.</p>
 
       <p style="line-height:1.6;">
         <strong>Numéro de demande :</strong> {intervention_numero}<br>
         <strong>Date de soumission :</strong> {date}
       </p>
 
-      <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
+      <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
 
       <p>
         Merci de votre confiance.
@@ -189,7 +189,7 @@ def submit():
         📎 <strong>Besoin d'un justificatif ?</strong><br>
         <a href="{lien_impression}" target="_blank" 
            style="color:#1c3faa; text-decoration:none; font-weight:bold;">
-          Cliquez ici pour consulter ou imprimer votre fiche d'intervention
+          Cliquez ici pour consulter ou imprimer la fiche de votre demande
         </a>
       </p>
 
@@ -369,7 +369,7 @@ def resend_confirmation(id):
         # 📬 Envoi de l’e-mail si email valide
         if email and EMAIL_REGEX.match(email):
             msg = Message(
-                subject=f"Confirmation de votre demande de support - {intervention_numero}",
+                subject=f"Réception de votre demande - {intervention_numero}",
                 recipients=[email]
             )
             msg.html = f"""
@@ -383,18 +383,18 @@ def resend_confirmation(id):
       </div>
 
       <!-- Titre -->
-      <h2 style="color:#1c3faa; text-align:center;">Confirmation de votre demande de support</h2>
+      <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
       
       <!-- Message principal -->
       <p>Bonjour <strong>{contact_nom}</strong>,</p>
-      <p>Nous vous confirmons une nouvelle fois la réception de votre demande de support.</p>
+      <p>Nous vous confirmons une nouvelle fois la réception de votre demande.</p>
 
       <p style="line-height:1.6;">
         <strong>Numéro de demande :</strong> {intervention_numero}<br>
         <strong>Date de soumission :</strong> {date}
       </p>
 
-      <p>Notre équipe vous contactera sous peu pour finaliser les détails de l'intervention.</p>
+      <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
 
       <p>
         Merci de votre confiance.
@@ -405,7 +405,7 @@ def resend_confirmation(id):
         📎 <strong>Besoin d'un justificatif ?</strong><br>
         <a href="{lien_impression}" target="_blank" 
            style="color:#1c3faa; text-decoration:none; font-weight:bold;">
-          Cliquez ici pour consulter ou imprimer votre fiche d'intervention
+          Cliquez ici pour consulter ou imprimer la fiche de votre demande
         </a>
       </p>
 
@@ -600,7 +600,7 @@ def resolve_and_notify(id):
       <p>Bonjour <strong>{contact_nom}</strong>,</p>
 
       <p>
-        Nous vous informons que votre demande de support <strong>{intervention_numero}</strong> a été 
+        Nous vous informons que votre demande <strong>{intervention_numero}</strong> a été 
         <strong>résolue</strong> et <strong>clôturée</strong> par notre équipe.
       </p>
 

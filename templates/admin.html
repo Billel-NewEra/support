@@ -467,10 +467,10 @@
 
   <div id="action-dropdown" class="action-dropdown d-none">
     <div class="action-option" onclick="redirectTo('edit')">Modifier</div>
-    <div class="action-option" onclick="redirectTo('resend')">Renvoyer confirmation</div>
     <div class="action-option" onclick="redirectTo('planif')">Planifier intervention</div>
     <div class="action-option" onclick="redirectTo('planifMail')">Confirmer planification</div>
     <div class="action-option" onclick="redirectTo('print')">Imprimer</div>
+    <div class="action-option" onclick="redirectTo('resend')">Renvoyer confirmation</div>
     <div class="action-option text-danger" onclick="redirectTo('delete')">Supprimer</div>
   </div>
 
@@ -892,14 +892,29 @@ function openActionMenu(e, id) {
   const spaceRight = window.innerWidth - rect.right;
   const menuWidth = dropdown.offsetWidth;
 
-  // 📝 fermeture actions — si on clique sur le même ID, on ferme le menu
+  // 🔍 Récupère le texte complet du bloc détails
+  const details = document.querySelector(`#details-${id}`);
+  const text = details ? details.innerText.toLowerCase() : '';
+
+  // 🧠 Vérifie si c’est une commande
+  const isCommandeRep = text.includes('type de support') && (text.includes('commande') || text.includes('reparation'));
+
+  // 🎛️ Cacher les options de planif pour les commandes
+  const planifMailEl = dropdown.querySelector('[onclick="redirectTo(\'planifMail\')"]');
+
+  if (isCommandeRep) {
+    planifMailEl.style.display = 'none';
+  } else {
+    planifMailEl.style.display = '';
+  }
+
+  // 🧩 Gestion de l’ouverture / fermeture du menu
   if (actionMenuOpenFor === id) {
     dropdown.classList.add('d-none');
     actionMenuOpenFor = null;
     return;
   }
 
-  // 📝 ouverture actions
   currentActionId = id;
   actionMenuOpenFor = id;
   dropdown.style.top = `${rect.bottom + window.scrollY}px`;
