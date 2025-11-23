@@ -263,9 +263,9 @@ def submit():
         </body>
       </html>
       """
-
-      mail.send(msg_admin)
-      print("Email interne envoyé")
+      with mail.connect() as conn:
+        conn.send(msg_admin)
+        print("Email interne envoyé")
 
     except Exception as e:
       print(f"Erreur lors de l'envoi de l'email:", e)
