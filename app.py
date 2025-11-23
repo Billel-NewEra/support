@@ -147,74 +147,78 @@ def submit():
     #     print("⚠️ Exception génération PDF:", e)
 
     # 📬 Envoi du courriel si email valide
-    try:
-      # 🆔 Construction du lien vers la fiche
-      lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
-      # ============================
+
+    # ============================
+    # CONSTRUCTION DES EMAILS
+    # ============================
+
+    lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+
+    # ============================
       # 1) EMAIL AU CLIENT
       # ============================
-      if email and EMAIL_REGEX.match(email):
-        msg_client = Message(
+
+    msg_client = Message(
             subject=f"Réception de votre demande - {intervention_numero}",
             recipients=[email]
         )
         # 🖼️ Version HTML
-        msg_client.html = f"""
-<html>
-  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
-    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-      
-      <!-- Logo Mobibenz -->
-      <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
-      </div>
+    msg_client.html = f"""
+      <html>
+        <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+          <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
 
-      <!-- Titre -->
-      <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
-      
-      <!-- Message principal -->
-      <p>Bonjour <strong>{contact_nom}</strong>,</p>
-      <p>Nous avons bien reçu votre demande.</p>
+            <!-- Logo Mobibenz -->
+            <div style="text-align:center; margin-bottom:20px;">
+              <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
+            </div>
 
-      <p style="line-height:1.6;">
-        <strong>Numéro de demande :</strong> {intervention_numero}<br>
-        <strong>Date de soumission :</strong> {date}
-      </p>
+            <!-- Titre -->
+            <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
 
-      <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
+            <!-- Message principal -->
+            <p>Bonjour <strong>{contact_nom}</strong>,</p>
+            <p>Nous avons bien reçu votre demande.</p>
 
-      <p>
-        Merci de votre confiance.
-      </p>
+            <p style="line-height:1.6;">
+              <strong>Numéro de demande :</strong> {intervention_numero}<br>
+              <strong>Date de soumission :</strong> {date}
+            </p>
 
-      <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
-      <p style="margin-top:20px; text-align:center;">
-        📎 <strong>Besoin d'un justificatif ?</strong><br>
-        <a href="{lien_impression}" target="_blank" 
-           style="color:#1c3faa; text-decoration:none; font-weight:bold;">
-          Cliquez ici pour consulter ou imprimer la fiche de votre demande
-        </a>
-      </p>
+            <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
 
-      <!-- Bloc frais -->
-        <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
-            <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
-            <ul style="margin:0; padding-left:20px;">
-              <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
-              <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
-            </ul>
-        </div>
+            <p>
+              Merci de votre confiance.
+            </p>
 
-      <!-- Footer -->
-      <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-        <strong>Mobibenz Support</strong><br>
-        📞 Support technique : 0557 75 56 60<br>
-        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
-      </p>
-    </div>
-  </body>
-</html>
-"""
+            <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
+            <p style="margin-top:20px; text-align:center;">
+              📎 <strong>Besoin d'un justificatif ?</strong><br>
+              <a href="{lien_impression}" target="_blank" 
+                 style="color:#1c3faa; text-decoration:none; font-weight:bold;">
+                Cliquez ici pour consulter ou imprimer la fiche de votre demande
+              </a>
+            </p>
+
+            <!-- Bloc frais -->
+              <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
+                  <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
+                  <ul style="margin:0; padding-left:20px;">
+                    <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
+                    <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
+                  </ul>
+              </div>
+
+            <!-- Footer -->
+            <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
+              <strong>Mobibenz Support</strong><br>
+              📞 Support technique : 0557 75 56 60<br>
+              🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
+            </p>
+          </div>
+        </body>
+      </html>
+      """
         # 📎 Pièce jointe si PDF généré
         # if pdf_bytes:
         #     msg.attach(
@@ -222,21 +226,16 @@ def submit():
         #         "application/pdf",
         #         pdf_bytes
         #     )
-        
-        mail.send(msg_client)
-        print("Email envoyé")
-      else:
-        print("Email ignore (vide ou invalide).")
-
+      
       # ============================
       # 2) EMAIL INTERNE MOBIBENZ
       # ============================
-      msg_admin = Message(
+    msg_admin = Message(
         subject=f"📥 Nouvelle demande — {intervention_numero}",
         recipients=["support@mobibenz.com"]   # ← Mets ton email interne ici
-      )
+    )
 
-      msg_admin.html = f"""
+    msg_admin.html = f"""
       <html>
         <body style="font-family: Arial; color:#333; padding:20px;">
           <h2>Nouvelle demande reçue</h2>
@@ -263,12 +262,29 @@ def submit():
         </body>
       </html>
       """
-      with mail.connect() as conn:
-        conn.send(msg_admin)
-        print("Email interne envoyé")
+    
+    # ============================
+    # ENVOIS AVEC 2 CONNEXIONS SÉPARÉES
+    # ============================
 
+    # --- Email client ---
+    if email and EMAIL_REGEX.match(email):
+        try:
+            with mail.connect() as conn:
+                conn.send(msg_client)
+                print("✔️ Email client envoyé")
+        except Exception as e:
+            print("❌ Erreur email client :", e)
+    else:
+        print("Email client ignoré (vide ou invalide)")
+
+    # --- Email interne ---
+    try:
+        with mail.connect() as conn:
+            conn.send(msg_admin)
+            print("✔️ Email interne envoyé")
     except Exception as e:
-      print(f"Erreur lors de l'envoi de l'email:", e)
+        print("❌ Erreur email interne :", e)
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
