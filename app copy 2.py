@@ -136,34 +136,39 @@ def submit():
     )
 
     msg_client.html = f"""
-<html>
-  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
-    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-      <div style="text-align:center; margin-bottom:20px;">
-        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
-      </div>
-      <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
-      <p>Bonjour <strong>{contact_nom}</strong>,</p>
-      <p>Nous avons bien reçu votre demande.</p>
-      <p>
-        <strong>Numéro :</strong> {intervention_numero}<br>
-        <strong>Date :</strong> {date}
-      </p>
-      <p style="margin-top:20px; text-align:center;">
-        📎 <strong>Besoin d'un justificatif ?</strong><br>
-        <a href="{lien_impression}" target="_blank" style="color:#1c3faa; font-weight:bold;">
-          Cliquez ici pour consulter / imprimer la fiche
-        </a>
-      </p>
-      <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
-        <strong>Mobibenz Support</strong><br>
-        📞 0557 75 56 60<br>
-        🌐 mobibenz.com/support
-      </p>
-    </div>
-  </body>
-</html>
-"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+        <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+          <div style="text-align:center; margin-bottom:20px;">
+            <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
+          </div>
+
+          <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
+
+          <p>Bonjour <strong>{contact_nom}</strong>,</p>
+          <p>Nous avons bien reçu votre demande.</p>
+
+          <p>
+            <strong>Numéro :</strong> {intervention_numero}<br>
+            <strong>Date :</strong> {date}
+          </p>
+
+          <p style="margin-top:20px; text-align:center;">
+            📎 <strong>Besoin d'un justificatif ?</strong><br>
+            <a href="{lien_impression}" target="_blank" style="color:#1c3faa; font-weight:bold;">
+              Cliquez ici pour consulter / imprimer la fiche
+            </a>
+          </p>
+
+          <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
+            <strong>Mobibenz Support</strong><br>
+            📞 0557 75 56 60<br>
+            🌐 mobibenz.com/support
+          </p>
+        </div>
+      </body>
+    </html>
+    """
 
     # --- EMAIL INTERNE ---
     msg_admin = Message(
@@ -172,28 +177,32 @@ def submit():
     )
 
     msg_admin.html = f"""
-<html>
-  <body style="font-family: Arial; color:#333; padding:20px;">
-    <h2>Nouvelle demande reçue</h2>
-    <p><strong>Numéro :</strong> {intervention_numero}</p>
-    <p><strong>Date :</strong> {date}</p>
-    <h3>Client</h3>
-    <p><strong>Entreprise :</strong> {entreprise}</p>
-    <p><strong>Nom :</strong> {contact_nom}</p>
-    <p><strong>Téléphone :</strong> {telephone}</p>
-    <p><strong>Email :</strong> {email}</p>
-    <h3>Détails</h3>
-    <p><strong>Titre :</strong> {titre}</p>
-    <p><strong>Type support :</strong> {type_support}</p>
-    <p><strong>Détail :</strong> {detail_support}</p>
-    <p><strong>Autre :</strong> {autre_detail}</p>
-    <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
-    <p style="margin-top:20px;">
-      🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
-    </p>
-  </body>
-</html>
-"""
+    <html>
+      <body style="font-family: Arial; color:#333; padding:20px;">
+        <h2>Nouvelle demande reçue</h2>
+
+        <p><strong>Numéro :</strong> {intervention_numero}</p>
+        <p><strong>Date :</strong> {date}</p>
+
+        <h3>Client</h3>
+        <p><strong>Entreprise :</strong> {entreprise}</p>
+        <p><strong>Nom :</strong> {contact_nom}</p>
+        <p><strong>Téléphone :</strong> {telephone}</p>
+        <p><strong>Email :</strong> {email}</p>
+
+        <h3>Détails</h3>
+        <p><strong>Titre :</strong> {titre}</p>
+        <p><strong>Type support :</strong> {type_support}</p>
+        <p><strong>Détail :</strong> {detail_support}</p>
+        <p><strong>Autre :</strong> {autre_detail}</p>
+        <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
+
+        <p style="margin-top:20px;">
+          🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
+        </p>
+      </body>
+    </html>
+    """
 
     # ============================
     # ENVOIS AVEC 2 CONNEXIONS SÉPARÉES
@@ -219,6 +228,7 @@ def submit():
         print("❌ Erreur email interne :", e)
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
+
 
 # ✅ Page de remerciement
 @app.route('/merci')
