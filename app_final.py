@@ -95,7 +95,6 @@ def submit():
     telephone = request.form.get('telephone', '').strip()
     email = request.form.get('email', '').strip()
     titre = request.form.get('titre', '').strip()
-    # 🗑️ description retirée ici
 
     type_support = request.form.get('type_support', '').strip()
     detail_support = request.form.get('detail_support', '').strip()
@@ -119,156 +118,105 @@ def submit():
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (intervention_numero, entreprise, contact_nom, telephone, email,
           titre, type_support, detail_support, autre_detail,
-          express, date, statut, date_planif, planif_confirmation_date))  # 🗑️ description retirée ici
+          express, date, statut, date_planif, planif_confirmation_date))
     conn.commit()
-    # 🆔 Récupération de l'ID inséré
     inserted_id = c.lastrowid
     conn.close()
 
-    # 🌐 Génération du PDF via PDFShift
-    # pdf_bytes = None
-    # try:
-    #     import requests
-    #     fiche_url = url_for('print_intervention', id=inserted_id, _external=True)
-    #     api_key = "sk_0fcf9fb73101a0a9669c55c21a93d6eba5731dec"  # 🛑 remplace par ta clé API PDFShift
+    # ============================
+    # CONSTRUCTION DES EMAILS
+    # ============================
 
-    #     response = requests.post(
-    #         "https://api.pdfshift.io/v3/convert",
-    #         auth=(api_key, ""),
-    #         json={"source": fiche_url}
-    #     )
+    lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
 
-    #     if response.status_code == 200:
-    #         pdf_bytes = response.content
-    #         print("✅ PDF généré avec succès depuis /print")
-    #     else:
-    #         print("⚠️ Erreur génération PDF:", response.text)
-    # except Exception as e:
-    #     print("⚠️ Exception génération PDF:", e)
+    # --- EMAIL CLIENT ---
+    msg_client = Message(
+        subject=f"Réception de votre demande - {intervention_numero}",
+        recipients=[email] if email else []
+    )
 
-    # 📬 Envoi du courriel si email valide
-    try:
-      # 🆔 Construction du lien vers la fiche
-      lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
-      # ============================
-      # 1) EMAIL AU CLIENT
-      # ============================
-      if email and EMAIL_REGEX.match(email):
-        msg_client = Message(
-            subject=f"Réception de votre demande - {intervention_numero}",
-            recipients=[email]
-        )
-        # 🖼️ Version HTML
-        msg_client.html = f"""
+    msg_client.html = f"""
 <html>
   <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
     <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-      
-      <!-- Logo Mobibenz -->
       <div style="text-align:center; margin-bottom:20px;">
         <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
       </div>
-
-      <!-- Titre -->
       <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
-      
-      <!-- Message principal -->
       <p>Bonjour <strong>{contact_nom}</strong>,</p>
       <p>Nous avons bien reçu votre demande.</p>
-
-      <p style="line-height:1.6;">
-        <strong>Numéro de demande :</strong> {intervention_numero}<br>
-        <strong>Date de soumission :</strong> {date}
-      </p>
-
-      <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
-
       <p>
-        Merci de votre confiance.
+        <strong>Numéro :</strong> {intervention_numero}<br>
+        <strong>Date :</strong> {date}
       </p>
-
-      <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
       <p style="margin-top:20px; text-align:center;">
         📎 <strong>Besoin d'un justificatif ?</strong><br>
-        <a href="{lien_impression}" target="_blank" 
-           style="color:#1c3faa; text-decoration:none; font-weight:bold;">
-          Cliquez ici pour consulter ou imprimer la fiche de votre demande
+        <a href="{lien_impression}" target="_blank" style="color:#1c3faa; font-weight:bold;">
+          Cliquez ici pour consulter / imprimer la fiche
         </a>
       </p>
-
-      <!-- Bloc frais -->
-        <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
-            <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
-            <ul style="margin:0; padding-left:20px;">
-              <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
-              <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
-            </ul>
-        </div>
-
-      <!-- Footer -->
       <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
         <strong>Mobibenz Support</strong><br>
-        📞 Support technique : 0557 75 56 60<br>
-        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
+        📞 0557 75 56 60<br>
+        🌐 mobibenz.com/support
       </p>
     </div>
   </body>
 </html>
 """
-        # 📎 Pièce jointe si PDF généré
-        # if pdf_bytes:
-        #     msg.attach(
-        #         f"{intervention_numero}.pdf",
-        #         "application/pdf",
-        #         pdf_bytes
-        #     )
-        
-        mail.send(msg_client)
-        print("Email envoyé")
-      else:
-        print("Email ignore (vide ou invalide).")
 
-      # ============================
-      # 2) EMAIL INTERNE MOBIBENZ
-      # ============================
-      msg_admin = Message(
+    # --- EMAIL INTERNE ---
+    msg_admin = Message(
         subject=f"📥 Nouvelle demande — {intervention_numero}",
-        recipients=["support@mobibenz.com"]   # ← Mets ton email interne ici
-      )
+        recipients=["support@mobibenz.com"]
+    )
 
-      msg_admin.html = f"""
-      <html>
-        <body style="font-family: Arial; color:#333; padding:20px;">
-          <h2>Nouvelle demande reçue</h2>
+    msg_admin.html = f"""
+<html>
+  <body style="font-family: Arial; color:#333; padding:20px;">
+    <h2>Nouvelle demande reçue</h2>
+    <p><strong>Numéro :</strong> {intervention_numero}</p>
+    <p><strong>Date :</strong> {date}</p>
+    <h3>Client</h3>
+    <p><strong>Entreprise :</strong> {entreprise}</p>
+    <p><strong>Nom :</strong> {contact_nom}</p>
+    <p><strong>Téléphone :</strong> {telephone}</p>
+    <p><strong>Email :</strong> {email}</p>
+    <h3>Détails</h3>
+    <p><strong>Titre :</strong> {titre}</p>
+    <p><strong>Type support :</strong> {type_support}</p>
+    <p><strong>Détail :</strong> {detail_support}</p>
+    <p><strong>Autre :</strong> {autre_detail}</p>
+    <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
+    <p style="margin-top:20px;">
+      🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
+    </p>
+  </body>
+</html>
+"""
 
-          <p><strong>Numéro :</strong> {intervention_numero}</p>
-          <p><strong>Date :</strong> {date}</p>
+    # ============================
+    # ENVOIS AVEC 2 CONNEXIONS SÉPARÉES
+    # ============================
 
-          <h3>Client</h3>
-          <p><strong>Entreprise :</strong> {entreprise}</p>
-          <p><strong>Nom :</strong> {contact_nom}</p>
-          <p><strong>Téléphone :</strong> {telephone}</p>
-          <p><strong>Email :</strong> {email}</p>
+    # --- Email client ---
+    if email and EMAIL_REGEX.match(email):
+        try:
+            with mail.connect() as conn:
+                conn.send(msg_client)
+                print("✔️ Email client envoyé")
+        except Exception as e:
+            print("❌ Erreur email client :", e)
+    else:
+        print("Email client ignoré (vide ou invalide)")
 
-          <h3>Détails</h3>
-          <p><strong>Titre :</strong> {titre}</p>
-          <p><strong>Type support :</strong> {type_support}</p>
-          <p><strong>Détail :</strong> {detail_support}</p>
-          <p><strong>Autre :</strong> {autre_detail}</p>
-          <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
-
-          <p style="margin-top:20px;">
-            🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
-          </p>
-        </body>
-      </html>
-      """
-
-      mail.send(msg_admin)
-      print("Email interne envoyé")
-
+    # --- Email interne ---
+    try:
+        with mail.connect() as conn:
+            conn.send(msg_admin)
+            print("✔️ Email interne envoyé")
     except Exception as e:
-      print(f"Erreur lors de l'envoi de l'email:", e)
+        print("❌ Erreur email interne :", e)
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
