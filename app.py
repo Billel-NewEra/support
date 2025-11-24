@@ -88,31 +88,27 @@ def support_form():
     return render_template('support.html')
 
 # 📥 Soumission formulaire
-from markupsafe import escape
-import traceback
-
 @app.route('/submit', methods=['POST'])
 def submit():
-    # ============================
-    # RÉCUPÉRATION + NETTOYAGE
-    # ============================
-    entreprise = escape(request.form.get('entreprise', '').strip())
-    contact_nom = escape(request.form.get('contact_nom', '').strip())
-    telephone = escape(request.form.get('telephone', '').strip())
-    email = escape(request.form.get('email', '').strip())
-    titre = escape(request.form.get('titre', '').strip())
-    type_support = escape(request.form.get('type_support', '').strip())
-    detail_support = escape(request.form.get('detail_support', '').strip())
-    autre_detail = escape(request.form.get('autre_detail', '').strip())
+    entreprise = request.form.get('entreprise', '').strip()
+    contact_nom = request.form.get('contact_nom', '').strip()
+    telephone = request.form.get('telephone', '').strip()
+    email = request.form.get('email', '').strip()
+    titre = request.form.get('titre', '').strip()
+    # 🗑️ description retirée ici
+
+    type_support = request.form.get('type_support', '').strip()
+    detail_support = request.form.get('detail_support', '').strip()
+    autre_detail = request.form.get('autre_detail', '').strip()
 
     express = 1 if 'express' in request.form else 0
+    date_planif = None
+    planif_confirmation_date = None
+
     intervention_numero = generate_intervention_number()
     date = now_local().strftime("%Y-%m-%d %H:%M:%S")
     statut = "En attente"
 
-    # ============================
-    # INSERTION DB
-    # ============================
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
@@ -123,109 +119,113 @@ def submit():
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (intervention_numero, entreprise, contact_nom, telephone, email,
           titre, type_support, detail_support, autre_detail,
-          express, date, statut, None, None))
+          express, date, statut, date_planif, planif_confirmation_date))  # 🗑️ description retirée ici
     conn.commit()
+    # 🆔 Récupération de l'ID inséré
     inserted_id = c.lastrowid
     conn.close()
 
-    lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+    # 🌐 Génération du PDF via PDFShift
+    # pdf_bytes = None
+    # try:
+    #     import requests
+    #     fiche_url = url_for('print_intervention', id=inserted_id, _external=True)
+    #     api_key = "sk_0fcf9fb73101a0a9669c55c21a93d6eba5731dec"  # 🛑 remplace par ta clé API PDFShift
 
-    # ============================
-    # 1) EMAIL CLIENT
-    # ============================
+    #     response = requests.post(
+    #         "https://api.pdfshift.io/v3/convert",
+    #         auth=(api_key, ""),
+    #         json={"source": fiche_url}
+    #     )
+
+    #     if response.status_code == 200:
+    #         pdf_bytes = response.content
+    #         print("✅ PDF généré avec succès depuis /print")
+    #     else:
+    #         print("⚠️ Erreur génération PDF:", response.text)
+    # except Exception as e:
+    #     print("⚠️ Exception génération PDF:", e)
+
+    # 📬 Envoi du courriel si email valide
     if email and EMAIL_REGEX.match(email):
         try:
-            msg_client = Message(
+            # 🆔 Construction du lien vers la fiche
+            lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+            msg = Message(
                 subject=f"Réception de votre demande - {intervention_numero}",
-                recipients=[email]
+                recipients=[email,"support@mobibenz.com"]
             )
-            msg_client.reply_to = None
+            # 🖼️ Version HTML
+            msg.html = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
+      
+      <!-- Logo Mobibenz -->
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="https://mobibenz.com/support/static/img/logo_180x180.png" alt="Mobibenz" style="max-width:100px;">
+      </div>
 
-            msg_client.html = f"""
-            <html>
-              <body style="font-family: Arial; background:#f9f9f9; padding:20px;">
-                <div style="max-width:600px; margin:0 auto; background:white; border-radius:8px; padding:20px;">
-                  
-                  <div style="text-align:center;">
-                    <img src="https://mobibenz.com/support/static/img/logo_180x180.png" style="max-width:100px;">
-                  </div>
+      <!-- Titre -->
+      <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
+      
+      <!-- Message principal -->
+      <p>Bonjour <strong>{contact_nom}</strong>,</p>
+      <p>Nous avons bien reçu votre demande.</p>
 
-                  <h2 style="color:#1c3faa; text-align:center;">Réception de votre demande</h2>
+      <p style="line-height:1.6;">
+        <strong>Numéro de demande :</strong> {intervention_numero}<br>
+        <strong>Date de soumission :</strong> {date}
+      </p>
 
-                  <p>Bonjour <strong>{contact_nom}</strong>,<br>
-                  Nous avons bien reçu votre demande.</p>
+      <p>Notre équipe vous contactera sous peu afin de finaliser les détails.</p>
 
-                  <p><strong>Numéro :</strong> {intervention_numero}<br>
-                     <strong>Date :</strong> {date}</p>
+      <p>
+        Merci de votre confiance.
+      </p>
 
-                  <p style="text-align:center; margin-top:20px;">
-                    📄 <a href="{lien_impression}" target="_blank">Consulter votre fiche</a>
-                  </p>
+      <!-- ✨ Nouveau paragraphe pour imprimer la fiche -->
+      <p style="margin-top:20px; text-align:center;">
+        📎 <strong>Besoin d'un justificatif ?</strong><br>
+        <a href="{lien_impression}" target="_blank" 
+           style="color:#1c3faa; text-decoration:none; font-weight:bold;">
+          Cliquez ici pour consulter ou imprimer la fiche de votre demande
+        </a>
+      </p>
 
-                  <p style="font-size:0.9rem; color:#666; text-align:center; margin-top:30px;">
-                    Mobibenz Support — 0557 75 56 60
-                  </p>
+      <!-- Bloc frais -->
+        <div style="background:#f2f2f2; padding:15px; border-left:4px solid #f0ad4e; margin-top:20px; border-radius:4px;">
+            <p style="margin:0 0 8px 0;">⚠️ <strong>Veuillez noter :</strong></p>
+            <ul style="margin:0; padding-left:20px;">
+              <li>Des frais de déplacement de <strong>minimum 3000 DA</strong> peuvent s'ajouter au coût de la prestation.</li>
+              <li>L'option <strong>Service Express (intervention sous 24 h)</strong> est disponible avec un supplément de <strong>5000 DA</strong>.</li>
+            </ul>
+        </div>
 
-                </div>
-              </body>
-            </html>
-            """
-
-            mail.send(msg_client)
-            print("✅ Email client envoyé")
-
+      <!-- Footer -->
+      <p style="margin-top:25px; text-align:center; font-size:0.9rem; color:#666;">
+        <strong>Mobibenz Support</strong><br>
+        📞 Support technique : 0557 75 56 60<br>
+        🌐 <a href="https://mobibenz.com/support" style="color:#1c3faa;">mobibenz.com/support</a>
+      </p>
+    </div>
+  </body>
+</html>
+"""
+            # 📎 Pièce jointe si PDF généré
+            # if pdf_bytes:
+            #     msg.attach(
+            #         f"{intervention_numero}.pdf",
+            #         "application/pdf",
+            #         pdf_bytes
+            #     )
+            
+            mail.send(msg)
+            print("Email envoyé")
         except Exception as e:
-            print("❌ Erreur email client :", e)
-            print(traceback.format_exc())
-
+            print(f"Erreur lors de l'envoi de l'email:", e)
     else:
-        print("ℹ️ Aucun email client envoyé (vide ou invalide).")
-
-
-    # ============================
-    # 2) EMAIL INTERNE ADMIN
-    # ============================
-    try:
-        msg_admin = Message(
-            subject=f"📥 Nouvelle demande — {intervention_numero}",
-            recipients=["support@mobibenz.com"]
-        )
-        msg_admin.reply_to = None
-
-        msg_admin.html = f"""
-        <html>
-          <body style="font-family: Arial; color:#333; padding:20px;">
-            <h2>Nouvelle demande reçue</h2>
-
-            <p><strong>Numéro :</strong> {intervention_numero}</p>
-            <p><strong>Date :</strong> {date}</p>
-
-            <h3>Client</h3>
-            <p><strong>Entreprise :</strong> {entreprise}</p>
-            <p><strong>Nom :</strong> {contact_nom}</p>
-            <p><strong>Téléphone :</strong> {telephone}</p>
-            <p><strong>Email :</strong> {email}</p>
-
-            <h3>Détails</h3>
-            <p><strong>Titre :</strong> {titre}</p>
-            <p><strong>Type support :</strong> {type_support}</p>
-            <p><strong>Détail :</strong> {detail_support}</p>
-            <p><strong>Autre :</strong> {autre_detail}</p>
-            <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
-
-            <p style="margin-top:20px;">🔗
-              <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
-            </p>
-          </body>
-        </html>
-        """
-
-        mail.send(msg_admin)
-        print("✅ Email interne envoyé")
-
-    except Exception as e:
-        print("❌ Erreur email interne :", e)
-        print(traceback.format_exc())
+        print("Email ignore (vide ou invalide).")
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
