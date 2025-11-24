@@ -125,19 +125,41 @@ def submit():
     inserted_id = c.lastrowid
     conn.close()
 
-    # ============================
-    # CONSTRUCTION DES EMAILS
-    # ============================
+    # 🌐 Génération du PDF via PDFShift
+    # pdf_bytes = None
+    # try:
+    #     import requests
+    #     fiche_url = url_for('print_intervention', id=inserted_id, _external=True)
+    #     api_key = "sk_0fcf9fb73101a0a9669c55c21a93d6eba5731dec"  # 🛑 remplace par ta clé API PDFShift
 
-    lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+    #     response = requests.post(
+    #         "https://api.pdfshift.io/v3/convert",
+    #         auth=(api_key, ""),
+    #         json={"source": fiche_url}
+    #     )
 
-    # --- EMAIL CLIENT ---
-    msg_client = Message(
-      subject=f"Réception de votre demande - {intervention_numero}",
-      recipients=[email] if email else []
-    )
+    #     if response.status_code == 200:
+    #         pdf_bytes = response.content
+    #         print("✅ PDF généré avec succès depuis /print")
+    #     else:
+    #         print("⚠️ Erreur génération PDF:", response.text)
+    # except Exception as e:
+    #     print("⚠️ Exception génération PDF:", e)
 
-    msg_client.html = f"""
+    # 📬 Envoi du courriel si email valide
+    try:
+      # 🆔 Construction du lien vers la fiche
+      lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+      # ============================
+      # 1) EMAIL AU CLIENT
+      # ============================
+      if email and EMAIL_REGEX.match(email):
+        msg_client = Message(
+            subject=f"Réception de votre demande - {intervention_numero}",
+            recipients=[email]
+        )
+        # 🖼️ Version HTML
+        msg_client.html = f"""
 <html>
   <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
     <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
@@ -193,60 +215,60 @@ def submit():
   </body>
 </html>
 """
-    
-    # ============================
-    # 2) EMAIL INTERNE MOBIBENZ
-    # ============================
-    msg_admin = Message(
-      subject=f"📥 Nouvelle demande — {intervention_numero}",
-      recipients=["support@mobibenz.com"]   # ← Mets ton email interne ici
-    )
+        # 📎 Pièce jointe si PDF généré
+        # if pdf_bytes:
+        #     msg.attach(
+        #         f"{intervention_numero}.pdf",
+        #         "application/pdf",
+        #         pdf_bytes
+        #     )
+        
+        mail.send(msg_client)
+        print("Email envoyé")
+      else:
+        print("Email ignore (vide ou invalide).")
 
-    msg_admin.html = f"""
-<html>
-  <body style="font-family: Arial; color:#333; padding:20px;">
-    <h2>Nouvelle demande reçue</h2>
-      <p><strong>Numéro :</strong> {intervention_numero}</p>
-      <p><strong>Date :</strong> {date}</p>
-      <h3>Client</h3>
-      <p><strong>Entreprise :</strong> {entreprise}</p>
-      <p><strong>Nom :</strong> {contact_nom}</p>
-      <p><strong>Téléphone :</strong> {telephone}</p>
-      <p><strong>Email :</strong> {email}</p>
-      <h3>Détails</h3>
-      <p><strong>Titre :</strong> {titre}</p>
-      <p><strong>Type support :</strong> {type_support}</p>
-      <p><strong>Détail :</strong> {detail_support}</p>
-      <p><strong>Autre :</strong> {autre_detail}</p>
-      <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
-      <p style="margin-top:20px;">
-        🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
-      </p>
-  </body>
-</html>
-"""
-    
-    # ============================
-    # ENVOIS AVEC 2 CONNEXIONS SÉPARÉES
-    # ============================
+      # ============================
+      # 2) EMAIL INTERNE MOBIBENZ
+      # ============================
+      msg_admin = Message(
+        subject=f"📥 Nouvelle demande — {intervention_numero}",
+        recipients=["support@mobibenz.com"]   # ← Mets ton email interne ici
+      )
 
-    if email and EMAIL_REGEX.match(email):
-      try:
-        with mail.connect() as conn:
-          conn.send(msg_client)
-          print("✔️ Email client envoyé")
-      except Exception as e:
-        print("❌ Erreur email client :", e)
-    else:
-      print("Email client ignoré (vide ou invalide)")
+      msg_admin.html = f"""
+      <html>
+        <body style="font-family: Arial; color:#333; padding:20px;">
+          <h2>Nouvelle demande reçue</h2>
 
-    # --- Email interne ---
-    try:
-      with mail.connect() as conn:
-        conn.send(msg_admin)
-        print("✔️ Email interne envoyé")
+          <p><strong>Numéro :</strong> {intervention_numero}</p>
+          <p><strong>Date :</strong> {date}</p>
+
+          <h3>Client</h3>
+          <p><strong>Entreprise :</strong> {entreprise}</p>
+          <p><strong>Nom :</strong> {contact_nom}</p>
+          <p><strong>Téléphone :</strong> {telephone}</p>
+          <p><strong>Email :</strong> {email}</p>
+
+          <h3>Détails</h3>
+          <p><strong>Titre :</strong> {titre}</p>
+          <p><strong>Type support :</strong> {type_support}</p>
+          <p><strong>Détail :</strong> {detail_support}</p>
+          <p><strong>Autre :</strong> {autre_detail}</p>
+          <p><strong>Express :</strong> {"Oui" if express else "Non"}</p>
+
+          <p style="margin-top:20px;">
+            🔗 <a href="{url_for('admin', _external=True)}">Ouvrir panneau admin</a>
+          </p>
+        </body>
+      </html>
+      """
+
+      mail.send(msg_admin)
+      print("Email interne envoyé")
+
     except Exception as e:
-      print("❌ Erreur email interne :", e)
+      print(f"Erreur lors de l'envoi de l'email:", e)
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
