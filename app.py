@@ -233,7 +233,8 @@ def submit():
       # ============================
       msg_admin = Message(
         subject=f"📥 Nouvelle demande — {intervention_numero}",
-        recipients=["support@mobibenz.com"]   # ← Mets ton email interne ici
+        recipients=["support@mobibenz.com"],   # ← Mets ton email interne ici
+        reply_to=""   # 🔥 forcer vide
       )
 
       msg_admin.html = f"""
