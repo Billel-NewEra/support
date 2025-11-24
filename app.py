@@ -147,16 +147,18 @@ def submit():
     #     print("⚠️ Exception génération PDF:", e)
 
     # 📬 Envoi du courriel si email valide
+    recipients=["support@mobibenz.com"]
     if email and EMAIL_REGEX.match(email):
-        try:
-            # 🆔 Construction du lien vers la fiche
-            lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
-            msg = Message(
-                subject=f"Réception de votre demande - {intervention_numero}",
-                recipients=[email,"support@mobibenz.com"]
-            )
-            # 🖼️ Version HTML
-            msg.html = f"""
+      recipients.append(email)   # on ajoute le client si email valide
+    try:
+      # 🆔 Construction du lien vers la fiche
+      lien_impression = url_for('print_intervention', id=inserted_id, _external=True)
+      msg = Message(
+          subject=f"Réception de votre demande - {intervention_numero}",
+          recipients=[email,"support@mobibenz.com"]
+      )
+      # 🖼️ Version HTML
+      msg.html = f"""
 <html>
   <body style="font-family: Arial, sans-serif; color: #333; background-color:#f9f9f9; padding:20px;">
     <div style="max-width:600px; margin:0 auto; background:#ffffff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
@@ -220,12 +222,10 @@ def submit():
             #         pdf_bytes
             #     )
             
-            mail.send(msg)
-            print("Email envoyé")
-        except Exception as e:
-            print(f"Erreur lors de l'envoi de l'email:", e)
-    else:
-        print("Email ignore (vide ou invalide).")
+      mail.send(msg)
+      print("Email envoyé")
+    except Exception as e:
+      print(f"Erreur lors de l'envoi de l'email:", e)
 
     return redirect(url_for('merci', intervention=intervention_numero, id=inserted_id, email=email))
 
