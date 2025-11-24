@@ -168,7 +168,8 @@ def submit():
     # --- EMAIL INTERNE ---
     msg_admin = Message(
         subject=f"📥 Nouvelle demande — {intervention_numero}",
-        recipients=["support@mobibenz.com"]
+        recipients=["support@mobibenz.com"],
+        reply_to=""
     )
 
     msg_admin.html = f"""
